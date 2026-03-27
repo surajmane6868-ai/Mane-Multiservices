@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mane Multiservices - CSC Manager</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<style>
+/* LOGIN SCREEN */
+#login-screen {
+  position: fixed; inset: 0; z-index: 99999;
+  background: linear-gradient(135deg, #0e7490 0%, #0a5f78 50%, #094d63 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.login-box {
+  background: #fff; border-radius: 18px; padding: 40px 36px;
+  width: 340px; box-shadow: 0 8px 40px rgba(0,0,0,0.25); text-align: center;
+}
+.login-logo {
+  width: 64px; height: 64px; background: linear-gradient(135deg, #e91e8c, #ff6b35);
+  border-radius: 16px; display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 18px; color: #fff; margin: 0 auto 16px;
+}
+.login-title { font-size: 22px; font-weight: 800; color: #0e7490; margin-bottom: 4px; }
+.login-sub { font-size: 13px; color: #64748b; margin-bottom: 28px; }
+.login-input-wrap { position: relative; margin-bottom: 16px; }
+.login-input-wrap input {
+  width: 100%; border: 2px solid #e2e8f0; border-radius: 8px;
+  padding: 12px 44px 12px 14px; font-size: 15px; outline: none;
+  transition: border 0.2s; color: #1e293b;
+}
+.login-input-wrap input:focus { border-color: #0e7490; }
+.login-eye {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  cursor: pointer; color: #94a3b8; font-size: 16px;
+}
+.login-btn {
+  width: 100%; padding: 13px; border-radius: 8px; border: none;
+  background: linear-gradient(135deg, #0e7490, #22d3ee);
+  color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
+  margin-top: 4px; transition: opacity 0.2s;
+}
+.login-btn:hover { opacity: 0.9; }
+.login-error { color: #ef4444; font-size: 13px; font-weight: 600; margin-top: 10px; display: none; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; display: flex; height: 100vh; overflow: hidden; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: 260px; min-width: 260px;
+    background: linear-gradient(180deg, #0e7490 0%, #0a5f78 60%, #094d63 100%);
+    color: #fff; display: flex; flex-direction: column;
+    height: 100vh; overflow-y: auto; z-index: 100;
+    transition: width 0.3s;
+  }
+  .sidebar-logo {
+    display: flex; align-items: center; gap: 12px;
+    padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+  .logo-icon {
+    width: 42px; height: 42px; background: linear-gradient(135deg, #e91e8c, #ff6b35);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 14px; color: #fff; letter-spacing: -1px;
+  }
+  .logo-text { font-size: 20px; font-weight: 700; color: #fff; }
+  .nav-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 20px; cursor: pointer; color: rgba(255,255,255,0.85);
+    font-size: 13.5px; font-weight: 600; letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s; position: relative;
+    text-transform: uppercase;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .nav-item.active { background: rgba(255,255,255,0.18); color: #fff; }
+  .nav-item.active::left { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:#e91e8c; border-radius:0 4px 4px 0; }
+  .nav-item i { width: 22px; text-align: center; font-size: 15px; }
+  .nav-arrow { margin-left: auto; font-size: 11px; }
+  .sidebar-footer { margin-top: auto; padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 20px; justify-content: center; }
+  .sidebar-footer i { font-size: 18px; color: rgba(255,255,255,0.6); cursor: pointer; }
+
+  /* MAIN */
+  #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* TOP BAR */
+  .topbar {
+    background: #fff; border-bottom: 1px solid #e2e8f0;
+    padding: 10px 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .topbar-hamburger { background: none; border: none; font-size: 20px; color: #555; cursor: pointer; margin-right: 6px; }
+  .tb-btn {
+    padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;
+    font-weight: 600; font-size: 13px; color: #fff; display: flex; align-items: center; gap: 6px;
+  }
+  .tb-btn.green { background: #22c55e; }
+  .tb-btn.gray { background: #64748b; }
+  .tb-btn.pink { background: #e91e8c; }
+  .tb-btn.darkgray { background: #475569; }
+  .tb-btn.yellow { background: #f59e0b; }
+  .tb-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .wallet-badge { background: #1e293b; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+
+  /* PAGE CONTENT */
+  #page-content { flex: 1; overflow-y: auto; padding: 20px; }
+
+  /* SECTION HEADER */
+  .section-header {
+    background: linear-gradient(90deg, #0e7490, #22d3ee 70%, #faef4a 100%);
+    color: #fff; padding: 10px 18px; border-radius: 6px 6px 0 0;
+    font-size: 16px; font-weight: 700; margin-bottom: 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .section-header::after {
+    content: ''; display: inline-block; width: 60px; height: 100%;
+    background: linear-gradient(90deg, #7c3aed, #faef4a);
+    position: absolute; right: 0;
+  }
+
+  /* BALANCE CARDS */
+  .balance-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 14px 0; }
+  .bal-card {
+    flex: 1; min-width: 140px; border-radius: 10px; padding: 14px 16px;
+    color: #fff; font-weight: 700;
+  }
+  .bal-card .bal-label { font-size: 11px; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
+  .bal-card .bal-date { font-size: 11px; opacity: 0.8; margin-bottom: 4px; }
+  .bal-card .bal-amount { font-size: 22px; font-weight: 800; }
+  .bal-card.cyan { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+  .bal-card.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+  .bal-card.pink { background: linear-gradient(135deg, #ec4899, #be185d); }
+  .bal-card.teal { background: linear-gradient(135deg, #0e7490, #155e75); }
+  .bal-card.lightcyan { background: linear-gradient(135deg, #22d3ee, #0891b2); }
+
+  /* SUMMARY CARDS */
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+  .sum-card {
+    background: #fff; border-radius: 10px; padding: 18px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .sum-card .sum-label { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .sum-card .sum-val { font-size: 22px; font-weight: 800; color: #1e293b; margin-top: 4px; }
+  .sum-card .sum-val.red { color: #ef4444; }
+  .sum-card .sum-val.green { color: #22c55e; }
+  .sum-icon { font-size: 32px; }
+
+  /* SECTION BOX */
+  .section-box { background: #fff; border-radius: 10px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .sec-head {
+    background: linear-gradient(90deg, #0e7490 0%, #22d3ee 75%, #faef4a 100%);
+    color: #fff; padding: 11px 18px; font-size: 15px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sec-body { padding: 16px; }
+
+  /* SEARCH BAR */
+  .search-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .search-input { border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 14px; font-size: 13px; flex: 1; min-width: 180px; outline: none; }
+  .search-input:focus { border-color: #0e7490; }
+  .btn-sm { padding: 7px 14px; border-radius: 5px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; }
+  .btn-teal { background: #0e7490; color: #fff; }
+  .btn-gray { background: #94a3b8; color: #fff; }
+  .btn-outline { background: #fff; border: 1px solid #cbd5e1; color: #475569; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #f8fafc; color: #475569; font-weight: 700; padding: 10px 12px; text-align: left; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+  tr:hover td { background: #f8fafc; }
+  .no-data { text-align: center; color: #e91e8c; font-size: 15px; font-weight: 600; padding: 30px; }
+  .table-footer { font-size: 12px; color: #64748b; padding: 10px 0 0; }
+  .csv-print { display: flex; gap: 6px; margin-left: auto; }
+  .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge.in { background: #dcfce7; color: #16a34a; }
+  .badge.out { background: #fee2e2; color: #dc2626; }
+
+  /* QUICK ADD FORMS */
+  .quick-forms { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .quick-form { border-radius: 10px; padding: 18px; }
+  .quick-form.qin { background: linear-gradient(135deg, #6d28d9, #7c3aed); }
+  .quick-form.qout { background: linear-gradient(135deg, #be185d, #e91e8c); }
+  .quick-form label { font-size: 11px; font-weight: 700; color: #fff; display: block; margin-bottom: 2px; }
+  .quick-form input, .quick-form textarea {
+    width: 100%; border-radius: 5px; border: none; padding: 7px 10px;
+    font-size: 13px; margin-bottom: 10px; background: #fff; color: #1e293b; outline: none;
+  }
+  .quick-form textarea { resize: vertical; min-height: 50px; }
+  .quick-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .quick-add-btn {
+    width: 100%; padding: 9px; border-radius: 6px; border: none; cursor: pointer;
+    font-weight: 700; font-size: 13px; background: #fff; color: #6d28d9; margin-top: 4px;
+  }
+  .quick-form.qout .quick-add-btn { color: #be185d; }
+
+  /* FILTERS */
+  .filter-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
+  .filter-field label { font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px; }
+  .filter-field input { width: 100%; border: 1px solid #cbd5e1; border-radius: 5px; padding: 7px 10px; font-size: 13px; outline: none; }
+  .filter-field input:focus { border-color: #0e7490; }
+
+  /* STATUS BADGE */
+  .status { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .status.pending { background: #fef3c7; color: #d97706; }
+  .status.done { background: #dcfce7; color: #16a34a; }
+  .status.overdue { background: #fee2e2; color: #dc2626; }
+
+  /* PAGE TITLE */
+  .page-title { font-size: 20px; font-weight: 800; color: #0e7490; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+
+  /* HIDDEN */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* TOPBAR VIEW ALL */
+  .view-all-btn { background: #0e7490; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+
+  @media (max-width: 700px) {
+    #sidebar { width: 200px; min-width: 200px; }
+    .quick-forms { grid-template-columns: 1fr; }
+    .summary-grid { grid-template-columns: 1fr; }
+    .balance-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">A2Z</div>
+    <div class="login-title">Mane Multiservices</div>
+    <div class="login-sub">CSC Manager — Please login to continue</div>
+    <div class="login-input-wrap">
+      <input type="password" id="login-pass" placeholder="Enter Password" onkeydown="if(event.key==='Enter') checkLogin()"/>
+      <span class="login-eye" onclick="togglePass()"><i class="fas fa-eye" id="eye-icon"></i></span>
+    </div>
+    <button class="login-btn" onclick="checkLogin()"><i class="fas fa-lock"></i> Login</button>
+    <div class="login-error" id="login-error">❌ Wrong password! Try again.</div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">A2Z</div>
+    <div class="logo-text">Mane Multiservices</div>
+  </div>
+  <div class="nav-item active" onclick="showPage('dashboard')">
+    <i class="fas fa-th-large"></i> Dashboard
+  </div>
+  <div class="nav-item" onclick="showPage('dailyinout')">
+    <i class="fas fa-exchange-alt"></i> Daily In / Out
+  </div>
+  <div class="nav-item" id="nav-leads-parent" onclick="toggleLeadsMenu()">
+    <i class="fas fa-tools"></i> Leads Mngt
+    <i class="fas fa-chevron-down nav-arrow" id="leads-arrow"></i>
+  </div>
+  <div id="leads-submenu" style="display:none;background:rgba(0,0,0,0.18);">
+    <div class="nav-item" style="padding-left:44px;font-size:12.5px;" onclick="showPage('add-lead')">
+      <i class="fas fa-plus-circle"></i> Add Lead
+    </div>
+    <div class="nav-item" style="padding-left:44px;font-size:12.5px;" onclick="showPage('view-leads')">
+      <i class="fas fa-list"></i> View Leads
+    </div>
+  </div>
+  <div class="nav-item" onclick="showPage('reminders')">
+    <i class="fas fa-bell"></i> Reminders
+  </div>
+  <div class="nav-item" onclick="showPage('bulksending')">
+    <i class="fab fa-whatsapp"></i> Bulk Sending
+  </div>
+  <div class="nav-item" onclick="showPage('customers')">
+    <i class="fas fa-users"></i> Customers Mngt
+  </div>
+  <div class="nav-item" onclick="showPage('services')">
+    <i class="fas fa-list-alt"></i> Services Mngt
+  </div>
+  <div class="nav-item" onclick="showPage('reports')">
+    <i class="fas fa-file-alt"></i> Reports
+  </div>
+  <div class="sidebar-footer">
+    <i class="fas fa-comment-dots"></i>
+    <i class="fas fa-phone"></i>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <button class="topbar-hamburger"><i class="fas fa-bars"></i></button>
+    <button class="tb-btn green" onclick="showPage('customers')"><i class="fas fa-user-plus"></i> Customer</button>
+    <button class="tb-btn gray" onclick="showPage('add-lead')"><i class="fas fa-plus"></i> Lead</button>
+    <button class="tb-btn gray" onclick="showPage('reminders')"><i class="fas fa-bell"></i> Reminders</button>
+    <button class="tb-btn pink" onclick="showPage('reports')"><i class="fas fa-chart-bar"></i> Cust Reports</button>
+    <div class="tb-right">
+      <div class="wallet-badge">Wallet ₹0.00</div>
+    </div>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div id="page-content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="page active" id="page-dashboard">
+      <div class="section-box">
+        <div class="sec-head">📊 In &amp; Out Summary
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input class="search-input" style="width:220px" placeholder="Search user by name or number" id="dash-search"/>
+            <button class="btn-sm btn-teal"><i class="fas fa-search"></i></button>
+          </div>
+        </div>
+        <div class="sec-body">
+          <div class="balance-row">
+            <div class="bal-card cyan">
+              <div class="bal-label">📅 Opening Balance</div>
+              <div class="bal-date" id="today-date"></div>
+              <div class="bal-amount">₹<span id="db-opening">0.00</span></div>
+            </div>
+            <div class="bal-card purple">
+              <div class="bal-label">⬇ Today IN</div>
+              <div class="bal-amount">₹<span id="db-in">0.00</span></div>
+            </div>
+            <div class="bal-card pink">
+              <div class="bal-label">⬆ Today OUT</div>
+              <div class="bal-amount">₹<span id="db-out">0.00</span></div>
+            </div>
+            <div class="bal-card teal">
+              <div class="bal-label">⚖ Today Balance</div>
+              <div class="bal-amount">₹<span id="db-today-bal">0.00</span></div>
+            </div>
+            <div class="bal-card lightcyan">
+              <div class="bal-label">⚖ Closing Balance</div>
+              <div class="bal-amount">₹<span id="db-closing">0.00</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <div class="sec-head">💼 Leads Business Summary</div>
+        <div class="sec-body">
+          <div class="summary-grid">
+            <div class="sum-card">
+              <div><div class="sum-label">Today Received Amount</div><div class="sum-val green">₹<span id="db-today-recv">0.00</span></div></div>
+              <span class="sum-icon">📅</span>
+            </div>
+            <div class="sum-card">
+              <div><div class="sum-label">Today Pending Amount</div><div class="sum-val red">₹<span id="db-today-pend">0.00</span></div></div>
+              <span class="sum-icon">⚠️</span>
+            </div>
+            <div class="sum-card">
+              <div><div class="sum-label">Todays Business Amount</div><div class="sum-val green">₹<span id="db-today-biz">0.00</span></div></div>
+              <span class="sum-icon" style="color:#22c55e;font-size:32px;">₹</span>
+            </div>
+            <div class="sum-card">
+              <div><div class="sum-label">Total Received Amount</div><div class="sum-val green">₹<span id="db-total-recv">0.00</span></div></div>
+              <span class="sum-icon" style="color:#22c55e;font-size:32px;">₹</span>
+            </div>
+            <div class="sum-card">
+              <div><div class="sum-label">Total Pending Amount</div><div class="sum-val red">₹<span id="db-total-pend">0.00</span></div></div>
+              <span class="sum-icon">🕐</span>
+            </div>
+            <div class="sum-card">
+              <div><div class="sum-label">Total Business Amount</div><div class="sum-val green">₹<span id="db-total-biz">0.00</span></div></div>
+              <span class="sum-icon" style="color:#22c55e;font-size:32px;">₹</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <div class="sec-head">👥 Other Summary</div>
+        <div class="sec-body">
+          <div class="summary-grid">
+            <div class="sum-card">
+              <div><div class="sum-label">Total Customers</div><div class="sum-val" id="db-total-cust">0</div></div>
+              <span class="sum-icon">👥</span>
+            </div>
+            <div class="sum-card">
+              <div><div class="sum-label">Total Services</div><div class="sum-val" id="db-total-svc">0</div></div>
+              <span class="sum-icon">⚙️</span>
+            </div>
+            <div class="sum-card">
+              <div><div class="sum-label">Total Leads</div><div class="sum-val" id="db-total-leads">0</div></div>
+              <span class="sum-icon">📣</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <div class="sec-head">🔔 Reminders, Follow-ups, Payments &amp; Queries Alert</div>
+        <div class="sec-body">
+          <div class="sum-card" style="max-width:320px;">
+            <div><div class="sum-label" style="color:#e91e8c;">Pending Reminders</div><div class="sum-val" id="db-pend-rem">0</div></div>
+            <span class="sum-icon">🔔</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DAILY IN/OUT ===== -->
+    <div class="page" id="page-dailyinout">
+      <div class="section-box" style="margin-bottom:16px;">
+        <div class="sec-head">💰 Daily In/Out Ledger
+          <button class="view-all-btn" onclick="toggleAllEntries()"><i class="fas fa-list"></i> View All Entries</button>
+        </div>
+        <div class="sec-body">
+          <div class="balance-row">
+            <div class="bal-card cyan">
+              <div class="bal-label">📅 Opening Balance</div>
+              <div class="bal-date" id="io-date"></div>
+              <div class="bal-amount">₹<span id="io-opening">0.00</span></div>
+            </div>
+            <div class="bal-card purple">
+              <div class="bal-label">⬇ Today IN</div>
+              <div class="bal-amount">₹<span id="io-in">0.00</span></div>
+            </div>
+            <div class="bal-card pink">
+              <div class="bal-label">⬆ Today OUT</div>
+              <div class="bal-amount">₹<span id="io-out">0.00</span></div>
+            </div>
+            <div class="bal-card teal">
+              <div class="bal-label">⚖ Today Balance</div>
+              <div class="bal-amount">₹<span id="io-balance">0.00</span></div>
+            </div>
+            <div class="bal-card lightcyan">
+              <div class="bal-label">⚖ Closing Balance</div>
+              <div class="bal-amount">₹<span id="io-closing">0.00</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-forms">
+        <!-- IN FORM -->
+        <div class="quick-form qin">
+          <div class="quick-form-grid">
+            <div>
+              <label>Name</label>
+              <input type="text" id="in-name" placeholder="Name (optional)"/>
+            </div>
+            <div>
+              <label>Number</label>
+              <input type="text" id="in-number" placeholder="Number (optional)"/>
+            </div>
+          </div>
+          <label>Description</label>
+          <textarea id="in-desc" placeholder="Description (optional)"></textarea>
+          <label>Amount</label>
+          <input type="number" id="in-amount" placeholder="Amount *"/>
+          <button class="quick-add-btn" onclick="addEntry('IN')">➕ Quick Add IN</button>
+        </div>
+        <!-- OUT FORM -->
+        <div class="quick-form qout">
+          <div class="quick-form-grid">
+            <div>
+              <label>Name</label>
+              <input type="text" id="out-name" placeholder="Name (optional)"/>
+            </div>
+            <div>
+              <label>Number</label>
+              <input type="text" id="out-number" placeholder="Number (optional)"/>
+            </div>
+          </div>
+          <label>Description</label>
+          <textarea id="out-desc" placeholder="Description (optional)"></textarea>
+          <label>Amount</label>
+          <input type="number" id="out-amount" placeholder="Amount *"/>
+          <button class="quick-add-btn" onclick="addEntry('OUT')">➕ Quick Add OUT</button>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <div class="sec-head">📋 Today's Entries</div>
+        <div class="sec-body">
+          <div class="search-row">
+            <i class="fas fa-search" style="color:#94a3b8;"></i>
+            <input class="search-input" id="io-search" placeholder="Search..." oninput="renderIOTable()"/>
+            <div class="csv-print" style="margin-left:auto;">
+              <button class="btn-sm btn-outline" onclick="exportCSV('io')">CSV</button>
+              <button class="btn-sm btn-outline" onclick="window.print()">Print</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Actions</th><th>Time</th><th>Type</th>
+                  <th>Customer Details (Name | Number)</th><th>Description</th><th>Amount</th>
+                </tr>
+              </thead>
+              <tbody id="io-tbody"></tbody>
+            </table>
+            <div id="io-nodata" class="no-data" style="display:none;">No data available in table</div>
+          </div>
+          <div class="table-footer" id="io-footer">Showing 0 to 0 of 0 entries</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ADD LEAD ===== -->
+    <div class="page" id="page-add-lead">
+      <div class="section-box">
+        <div class="sec-head" style="position:relative;">
+          ➕ Add New Lead
+          <button class="btn-sm btn-teal" onclick="showPage('view-leads')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;"><i class="fas fa-arrow-left"></i> Back to Leads</button>
+        </div>
+        <div class="sec-body">
+          <!-- Row 1: Entry Date, Customer, Contact No -->
+          <div style="display:grid;grid-template-columns:1fr 2fr 1fr;gap:14px;margin-bottom:18px;align-items:start;">
+            <div>
+              <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Entry Date <span style="color:red">*</span></label>
+              <input type="date" id="al-entry-date" style="width:100%;border:1.5px solid #cbd5e1;border-radius:6px;padding:9px 12px;font-size:13px;outline:none;" value=""/>
+            </div>
+            <div style="position:relative;">
+              <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Customer <span style="color:red">*</span></label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <div style="flex:1;position:relative;">
+                  <input type="text" id="al-customer-search" placeholder="Search customer by name, number, or email" style="width:100%;border:1.5px solid #cbd5e1;border-radius:6px;padding:9px 12px;font-size:13px;outline:none;" oninput="searchLeadCustomer()"/>
+                  <div id="al-customer-drop" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:0 0 8px 8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:9998;max-height:200px;overflow-y:auto;"></div>
+                </div>
+                <button onclick="openQuickAddCustomer()" style="background:#e2e8f0;color:#475569;border:none;border-radius:6px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;">+ Quick Add</button>
+              </div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Start typing to search for a customer</div>
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Contact No. <span style="color:red">*</span></label>
+              <input type="text" id="al-contact" placeholder="" style="width:100%;border:1.5px solid #cbd5e1;border-radius:6px;padding:9px 12px;font-size:13px;outline:none;" readonly/>
+            </div>
+          </div>
+
+          <!-- Services Section -->
+          <div style="border:1.5px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:18px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="font-size:15px;font-weight:700;color:#334155;">Services</div>
+              <button onclick="addLeadService()" style="background:#0e7490;color:#fff;border:none;border-radius:6px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;"><i class="fas fa-plus"></i> Add Service</button>
+            </div>
+            <div id="al-services-container">
+              <!-- Service rows added dynamically -->
+            </div>
+            <div style="background:#e0f9f9;border-radius:6px;padding:12px 16px;margin-top:10px;">
+              <span style="color:#0e7490;font-weight:700;font-size:14px;">Total Service Charges: ₹<span id="al-total-charges">0.00</span></span>
+            </div>
+          </div>
+
+          <!-- Payment Information -->
+          <div style="border:1.5px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:18px;">
+            <div style="font-size:14px;font-weight:700;color:#334155;margin-bottom:14px;">Payment Information</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;">
+              <div>
+                <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Payment Received Amount</label>
+                <input type="number" id="al-pay-received" value="0" style="width:100%;border:1.5px solid #cbd5e1;border-radius:6px;padding:9px 12px;font-size:13px;outline:none;" oninput="calcLeadPending()"/>
+              </div>
+              <div>
+                <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Payment Type</label>
+                <select id="al-pay-type" style="width:100%;border:1.5px solid #cbd5e1;border-radius:6px;padding:9px 12px;font-size:13px;outline:none;background:#fff;">
+                  <option>Cash</option><option>UPI</option><option>Card</option><option>Bank Transfer</option><option>Cheque</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Pending Payment</label>
+                <input type="number" id="al-pay-pending" value="0.00" style="width:100%;border:1.5px solid #cbd5e1;border-radius:6px;padding:9px 12px;font-size:13px;outline:none;background:#f8fafc;" readonly/>
+              </div>
+              <div>
+                <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Payment Date</label>
+                <input type="date" id="al-pay-date" style="width:100%;border:1.5px solid #cbd5e1;border-radius:6px;padding:9px 12px;font-size:13px;outline:none;"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div style="margin-bottom:18px;">
+            <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:6px;border:1.5px solid #cbd5e1;border-radius:6px 6px 0 0;padding:6px 12px;background:#f8fafc;">Notes</label>
+            <textarea id="al-notes" rows="4" style="width:100%;border:1.5px solid #cbd5e1;border-top:none;border-radius:0 0 6px 6px;padding:10px 12px;font-size:13px;outline:none;resize:vertical;"></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display:flex;gap:12px;">
+            <button onclick="saveLeadAndReceipt()" style="background:#0e7490;color:#fff;border:none;border-radius:6px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;"><i class="fas fa-save"></i> Save & Generate Receipt</button>
+            <button onclick="cancelAddLead()" style="background:#64748b;color:#fff;border:none;border-radius:6px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;">✕ Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== VIEW LEADS ===== -->
+    <div class="page" id="page-view-leads">
+      <div class="section-box">
+        <div class="sec-head" style="position:relative;">
+          📣 Leads Management
+          <button onclick="showPage('add-lead');initAddLeadForm();" style="background:#fff;color:#0e7490;border:none;border-radius:6px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;position:absolute;right:12px;top:50%;transform:translateY(-50%);"><i class="fas fa-plus"></i> Add Lead</button>
+        </div>
+        <div class="sec-body">
+          <div class="search-row">
+            <i class="fas fa-search" style="color:#94a3b8;"></i>
+            <input class="search-input" id="lead-search" placeholder="Search leads..." oninput="renderLeadsTable()"/>
+            <div class="csv-print" style="margin-left:auto;">
+              <button class="btn-sm btn-outline" onclick="exportCSV('leads')">CSV</button>
+              <button class="btn-sm btn-outline" onclick="window.print()">Print</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Actions</th><th>Date</th><th>Customer Name</th><th>Phone</th><th>Services</th><th>Total Charges</th><th>Received</th><th>Pending</th><th>Notes</th><th>Status</th></tr></thead>
+              <tbody id="leads-tbody"></tbody>
+            </table>
+            <div id="leads-nodata" class="no-data" style="display:none;">No data available in table</div>
+          </div>
+          <div class="table-footer" id="leads-footer">Showing 0 to 0 of 0 entries</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RECEIPT MODAL ===== -->
+    <div id="receipt-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99990;align-items:center;justify-content:center;">
+      <div style="background:#fff;border-radius:10px;width:600px;max-width:95vw;max-height:90vh;overflow-y:auto;padding:20px;">
+        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;">
+          <button onclick="printReceipt()" style="background:#0e7490;color:#fff;border:none;border-radius:6px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;"><i class="fas fa-print"></i> Print Receipt</button>
+          <button onclick="closeReceiptModal()" style="background:#64748b;color:#fff;border:none;border-radius:6px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;">Close</button>
+        </div>
+        <div id="receipt-content" style="border:1px solid #e2e8f0;border-radius:6px;padding:24px;font-family:'Segoe UI',sans-serif;">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== REMINDERS ===== -->
+    <div class="page" id="page-reminders">
+      <div class="section-box">
+        <div class="sec-head">🔔 Reminders (Lead Follow-ups)</div>
+        <div class="sec-body">
+          <div class="filter-box">
+            <div class="filter-grid">
+              <div class="filter-field"><label>Date From</label><input type="date" id="rem-datefrom"/></div>
+              <div class="filter-field"><label>Date To</label><input type="date" id="rem-dateto"/></div>
+              <div class="filter-field"><label>Customer Name</label><input type="text" id="rem-cname" placeholder="Search customer name..."/></div>
+              <div class="filter-field"><label>Customer Number</label><input type="text" id="rem-cnum" placeholder="Search customer number..."/></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:14px;">
+              <button class="btn-sm btn-teal" onclick="applyReminderFilters()">Apply Filters</button>
+              <button class="btn-sm btn-gray" onclick="clearReminderFilters()">Clear Filters</button>
+            </div>
+            <!-- ADD REMINDER FORM -->
+            <div style="background:#f8fafc;border-radius:8px;padding:14px;border:1px solid #e2e8f0;margin-top:8px;">
+              <div style="font-weight:700;color:#0e7490;margin-bottom:10px;font-size:13px;">➕ Add New Reminder</div>
+              <div class="filter-grid">
+                <div class="filter-field"><label>Customer Name *</label><input type="text" id="rem-new-name" placeholder="Customer name"/></div>
+                <div class="filter-field"><label>Customer Number</label><input type="text" id="rem-new-num" placeholder="Phone number"/></div>
+                <div class="filter-field"><label>Service</label><input type="text" id="rem-new-svc" placeholder="Service name"/></div>
+                <div class="filter-field"><label>Expected Date *</label><input type="date" id="rem-new-date"/></div>
+                <div class="filter-field"><label>Follow-up Date</label><input type="date" id="rem-new-followup"/></div>
+                <div class="filter-field"><label>Center Query</label><input type="text" id="rem-new-query" placeholder="Query (optional)"/></div>
+              </div>
+              <button class="btn-sm btn-teal" onclick="addReminder()">➕ Add Reminder</button>
+            </div>
+          </div>
+          <div class="search-row">
+            <i class="fas fa-search" style="color:#94a3b8;"></i>
+            <input class="search-input" id="rem-search" placeholder="Search..." oninput="renderRemindersTable()"/>
+            <div class="csv-print" style="margin-left:auto;">
+              <button class="btn-sm btn-outline" onclick="exportCSV('rem')">CSV</button>
+              <button class="btn-sm btn-outline" onclick="window.print()">Print</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Actions</th><th>Receipt No.</th><th>Earliest Expected Date</th>
+                  <th>Days Remaining</th><th>Customer Name</th><th>Customer Number</th>
+                  <th>Service</th><th>Follow-up Date</th><th>Next Follow-up</th><th>Center Query</th>
+                </tr>
+              </thead>
+              <tbody id="rem-tbody"></tbody>
+            </table>
+            <div id="rem-nodata" class="no-data" style="display:none;">No data available in table</div>
+          </div>
+          <div class="table-footer" id="rem-footer">Showing 0 to 0 of 0 entries</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== BULK SENDING ===== -->
+    <div class="page" id="page-bulksending">
+      <div class="section-box">
+        <div class="sec-head">📤 Bulk Sending</div>
+        <div class="sec-body" style="padding:30px;text-align:center;color:#64748b;">
+          <i class="fab fa-whatsapp" style="font-size:60px;color:#22c55e;margin-bottom:16px;display:block;"></i>
+          <div style="font-size:18px;font-weight:700;margin-bottom:8px;">Bulk WhatsApp / SMS Sending</div>
+          <div style="font-size:14px;">This feature allows sending bulk messages to all customers. Coming soon!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CUSTOMERS MNGT ===== -->
+    <div class="page" id="page-customers">
+
+      <!-- DSM-style Header Bar -->
+      <div style="background:linear-gradient(90deg,#0e7490 0%,#22d3ee 70%,#faef4a 100%);padding:11px 18px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <span style="color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-users"></i> Customers List
+        </span>
+        <div style="display:flex;gap:8px;">
+          <button onclick="openAddCustomerModal()" style="background:#0e7490;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+            <i class="fas fa-plus"></i> Add Customer
+          </button>
+          <button onclick="openAddCategoryModal()" style="background:#1e293b;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;">
+            <i class="fas fa-plus"></i> Add Customer Category
+          </button>
+        </div>
+      </div>
+
+      <!-- Table Card -->
+      <div style="background:#fff;border-radius:0 0 10px 10px;box-shadow:0 2px 12px rgba(0,0,0,0.08);padding:18px;">
+
+        <!-- Search + Column Visibility + CSV + Print row -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+          <div style="position:relative;flex:1;min-width:200px;max-width:340px;">
+            <i class="fas fa-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:13px;"></i>
+            <input id="cust-search" oninput="renderCustomersTable()" placeholder="Search" style="width:100%;border:1.5px solid #e2e8f0;border-radius:6px;padding:9px 12px 9px 34px;font-size:13px;outline:none;transition:border 0.2s;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#e2e8f0'"/>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:7px;align-items:center;">
+            <div style="position:relative;">
+              <button onclick="toggleColVisibility()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:6px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;color:#475569;display:flex;align-items:center;gap:5px;">
+                Column Visibility <i class="fas fa-chevron-down" style="font-size:10px;"></i>
+              </button>
+              <div id="col-visibility-menu" style="display:none;position:absolute;right:0;top:110%;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:10px;z-index:999;min-width:170px;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleCol('col-date',this.checked)"> Date</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleCol('col-name',this.checked)"> Name</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleCol('col-addl',this.checked)"> Additional Details</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleCol('col-cat',this.checked)"> Categories</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleCol('col-num',this.checked)"> Number</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleCol('col-city',this.checked)"> City</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleCol('col-reg',this.checked)"> Register At</label>
+              </div>
+            </div>
+            <button onclick="exportCSV('cust')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;color:#475569;">CSV</button>
+            <button onclick="window.print()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;color:#475569;">Print</button>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrap">
+          <table id="cust-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background:#f8fafc;">
+                <th class="col-actions" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;white-space:nowrap;">Actions</th>
+                <th class="col-name" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;cursor:pointer;" onclick="sortCust('name')">Name <i class="fas fa-sort" style="font-size:10px;color:#b0b8c4;"></i></th>
+                <th class="col-addl" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;cursor:pointer;" onclick="sortCust('service')">Additional Details <i class="fas fa-sort" style="font-size:10px;color:#b0b8c4;"></i></th>
+                <th class="col-cat" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;cursor:pointer;" onclick="sortCust('payment')">Categories <i class="fas fa-sort" style="font-size:10px;color:#b0b8c4;"></i></th>
+                <th class="col-num" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;cursor:pointer;" onclick="sortCust('phone')">Number <i class="fas fa-sort" style="font-size:10px;color:#b0b8c4;"></i></th>
+                <th class="col-city" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;cursor:pointer;" onclick="sortCust('address')">City <i class="fas fa-sort" style="font-size:10px;color:#b0b8c4;"></i></th>
+                <th class="col-reg" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;cursor:pointer;" onclick="sortCust('dateISO')">Register At <i class="fas fa-sort" style="font-size:10px;color:#b0b8c4;"></i></th>
+              </tr>
+            </thead>
+            <tbody id="cust-tbody"></tbody>
+          </table>
+          <div id="cust-nodata" class="no-data" style="display:none;text-align:center;color:#e91e8c;font-size:16px;font-weight:600;padding:48px 20px;">No data available in table</div>
+        </div>
+
+        <!-- Footer: showing entries + pagination -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px;">
+          <div class="table-footer" id="cust-footer" style="font-size:12px;color:#64748b;">Showing 0 to 0 of 0 entries</div>
+          <div style="display:flex;gap:4px;">
+            <button onclick="custPagePrev()" style="border:1px solid #e2e8f0;background:#fff;color:#475569;border-radius:5px;padding:6px 12px;cursor:pointer;font-size:13px;">&lsaquo;</button>
+            <button onclick="custPageNext()" style="border:1px solid #e2e8f0;background:#fff;color:#475569;border-radius:5px;padding:6px 12px;cursor:pointer;font-size:13px;">&rsaquo;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD CUSTOMER MODAL — exact Screenshot 2 -->
+      <div id="add-cust-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:10px;width:620px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.22);">
+          <!-- Title bar -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid #e2e8f0;">
+            <span style="font-size:16px;font-weight:700;color:#1e293b;">Add Customer</span>
+            <button onclick="closeAddCustomerModal()" style="background:none;border:none;font-size:20px;color:#94a3b8;cursor:pointer;line-height:1;">&times;</button>
+          </div>
+          <div style="padding:20px 22px;">
+            <!-- Row 1: Name + Number -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+              <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 10px;">
+                <div style="display:inline-block;background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px;margin-top:-10px;">Name <span style="color:#e91e8c;">*</span></div>
+                <input type="text" id="cust-name" placeholder="Enter Name" style="width:100%;border:none;outline:none;font-size:13px;color:#334155;background:transparent;"/>
+              </div>
+              <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 10px;">
+                <div style="display:inline-block;background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px;margin-top:-10px;">Number <span style="color:#e91e8c;">*</span></div>
+                <input type="text" id="cust-phone" placeholder="Enter Number" style="width:100%;border:none;outline:none;font-size:13px;color:#334155;background:transparent;"/>
+              </div>
+            </div>
+            <!-- Row 2: City + Additional Details -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+              <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 10px;">
+                <div style="display:inline-block;background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px;margin-top:-10px;">City <span style="color:#e91e8c;">*</span></div>
+                <input type="text" id="cust-address" placeholder="Enter City" style="width:100%;border:none;outline:none;font-size:13px;color:#334155;background:transparent;"/>
+              </div>
+              <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 10px;">
+                <div style="display:inline-block;background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px;margin-top:-10px;">Additional Details <span style="color:#e91e8c;font-weight:400;font-style:italic;">optional</span></div>
+                <textarea id="cust-service" placeholder="Additional Details" rows="3" style="width:100%;border:none;outline:none;font-size:13px;color:#334155;background:transparent;resize:vertical;"></textarea>
+              </div>
+            </div>
+            <!-- Customer Categories multi-select -->
+            <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 14px;margin-bottom:20px;">
+              <div style="display:inline-block;background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:10px;margin-top:-10px;">Customer Categories <span style="color:#94a3b8;font-weight:400;">(Select multiple)</span></div>
+              <div id="cust-cat-checkboxes" style="background:#f8fafc;border-radius:6px;padding:14px;min-height:60px;"></div>
+            </div>
+            <!-- Buttons -->
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <button onclick="closeAddCustomerModal()" style="padding:10px 26px;border-radius:7px;border:none;background:#64748b;color:#fff;font-weight:700;font-size:13px;cursor:pointer;">Close</button>
+              <button onclick="addCustomer()" style="padding:10px 28px;border-radius:7px;border:none;background:#0e7490;color:#fff;font-weight:700;font-size:13px;cursor:pointer;">Add Customer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD CATEGORY MODAL — exact Screenshot 1 -->
+      <div id="add-cat-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:10px;width:440px;max-width:96vw;box-shadow:0 8px 40px rgba(0,0,0,0.22);">
+          <!-- Title bar -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid #e2e8f0;">
+            <span style="font-size:16px;font-weight:700;color:#1e293b;">Add Customer Category</span>
+            <button onclick="closeAddCategoryModal()" style="background:none;border:none;font-size:20px;color:#94a3b8;cursor:pointer;line-height:1;">&times;</button>
+          </div>
+          <div style="padding:20px 22px;">
+            <!-- Category Name field -->
+            <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 10px;margin-bottom:16px;">
+              <div style="display:inline-block;background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px;margin-top:-10px;">Category Name <span style="color:#e91e8c;">*</span></div>
+              <input type="text" id="new-cat-name" placeholder="Enter Category Name" style="width:100%;border:none;outline:none;font-size:13px;color:#334155;background:transparent;"/>
+            </div>
+            <!-- Added On date field -->
+            <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 10px;margin-bottom:20px;">
+              <div style="display:inline-block;background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px;margin-top:-10px;">Added On <span style="color:#e91e8c;">*</span></div>
+              <input type="date" id="new-cat-date" style="width:100%;border:none;outline:none;font-size:13px;color:#334155;background:transparent;"/>
+            </div>
+            <!-- Recently Added Categories -->
+            <div style="margin-bottom:20px;">
+              <div style="display:flex;align-items:center;gap:7px;color:#475569;font-size:13px;font-weight:600;margin-bottom:8px;">
+                <i class="fas fa-tag" style="color:#94a3b8;"></i> Recently Added Categories
+              </div>
+              <div id="recent-cat-list" style="font-size:13px;color:#94a3b8;min-height:30px;"></div>
+            </div>
+            <!-- Buttons -->
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <button onclick="closeAddCategoryModal()" style="padding:10px 26px;border-radius:7px;border:none;background:#64748b;color:#fff;font-weight:700;font-size:13px;cursor:pointer;">Close</button>
+              <button onclick="addCategory()" style="padding:10px 26px;border-radius:7px;border:none;background:#0e7490;color:#fff;font-weight:700;font-size:13px;cursor:pointer;">Add Category</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== SERVICES MNGT ===== -->
+    <div class="page" id="page-services">
+
+      <!-- DSM-style Header -->
+      <div style="background:linear-gradient(90deg,#0e7490 0%,#22d3ee 70%,#faef4a 100%);padding:11px 18px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;">
+        <span style="color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-list-alt"></i> Services List
+        </span>
+        <button onclick="openAddServiceModal()" style="background:#1e293b;color:#fff;border:none;border-radius:6px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;">
+          <i class="fas fa-plus"></i> Add Service
+        </button>
+      </div>
+
+      <!-- Table Card -->
+      <div style="background:#fff;border-radius:0 0 10px 10px;box-shadow:0 2px 12px rgba(0,0,0,0.08);padding:18px;">
+
+        <!-- Search + Controls -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+          <div style="position:relative;flex:1;min-width:200px;max-width:340px;">
+            <i class="fas fa-search" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:13px;"></i>
+            <input id="svc-search" oninput="renderServicesTable()" placeholder="Search" style="width:100%;border:1.5px solid #e2e8f0;border-radius:6px;padding:9px 12px 9px 34px;font-size:13px;outline:none;" onfocus="this.style.borderColor='#0e7490'" onblur="this.style.borderColor='#e2e8f0'"/>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:7px;">
+            <div style="position:relative;">
+              <button id="svc-col-toggle-btn" onclick="toggleSvcColVisibility()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:6px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;color:#475569;display:flex;align-items:center;gap:5px;">
+                Column Visibility <i class="fas fa-chevron-down" style="font-size:10px;"></i>
+              </button>
+              <div id="svc-col-menu" style="display:none;position:absolute;right:0;top:110%;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:10px;z-index:999;min-width:170px;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleSvcCol('svc-col-id',this.checked)"> ID</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleSvcCol('svc-col-name',this.checked)"> Name</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleSvcCol('svc-col-govfee',this.checked)"> Government Fees</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleSvcCol('svc-col-svcfee',this.checked)"> Service Fee</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleSvcCol('svc-col-std',this.checked)"> Standard Charges</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer;"><input type="checkbox" checked onchange="toggleSvcCol('svc-col-exp',this.checked)"> Expected Day</label>
+              </div>
+            </div>
+            <button onclick="exportCSV('svc')" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;color:#475569;">CSV</button>
+            <button onclick="window.print()" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;color:#475569;">Print</button>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrap">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background:#f8fafc;">
+                <th class="svc-col-actions" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;">Actions</th>
+                <th class="svc-col-id" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;cursor:pointer;" onclick="sortSvc('id')">ID <i class="fas fa-sort" style="font-size:10px;color:#b0b8c4;"></i></th>
+                <th class="svc-col-name" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;cursor:pointer;" onclick="sortSvc('name')">Name <i class="fas fa-sort" style="font-size:10px;color:#b0b8c4;"></i></th>
+                <th class="svc-col-govfee" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;cursor:pointer;" onclick="sortSvc('govFee')">Government Fees <i class="fas fa-sort" style="font-size:10px;color:#b0b8c4;"></i></th>
+                <th class="svc-col-svcfee" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;cursor:pointer;" onclick="sortSvc('svcFee')">Service Fee <i class="fas fa-sort" style="font-size:10px;color:#b0b8c4;"></i></th>
+                <th class="svc-col-std" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;">Standard Charges</th>
+                <th class="svc-col-exp" style="padding:11px 14px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;cursor:pointer;" onclick="sortSvc('expectedDay')">Expected Day <i class="fas fa-sort" style="font-size:10px;color:#b0b8c4;"></i></th>
+              </tr>
+            </thead>
+            <tbody id="svc-tbody"></tbody>
+          </table>
+          <div id="svc-nodata" class="no-data" style="display:none;text-align:center;color:#e91e8c;font-size:16px;font-weight:600;padding:48px 20px;">No data available in table</div>
+        </div>
+
+        <!-- Footer -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px;">
+          <div id="svc-footer" style="font-size:12px;color:#64748b;">Showing 0 to 0 of 0 entries</div>
+          <div style="display:flex;gap:4px;">
+            <button onclick="svcPagePrev()" style="border:1px solid #e2e8f0;background:#fff;color:#475569;border-radius:5px;padding:6px 12px;cursor:pointer;font-size:13px;">&lsaquo;</button>
+            <button onclick="svcPageNext()" style="border:1px solid #e2e8f0;background:#fff;color:#475569;border-radius:5px;padding:6px 12px;cursor:pointer;font-size:13px;">&rsaquo;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD SERVICE MODAL — exact Screenshot 2 -->
+      <div id="add-svc-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:10px;width:620px;max-width:96vw;box-shadow:0 8px 40px rgba(0,0,0,0.22);">
+          <!-- Title bar -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 22px 14px;border-bottom:1px solid #e2e8f0;">
+            <span style="font-size:16px;font-weight:700;color:#1e293b;">Add Service</span>
+            <button onclick="closeAddServiceModal()" style="background:none;border:none;font-size:20px;color:#94a3b8;cursor:pointer;line-height:1;">&times;</button>
+          </div>
+          <div style="padding:20px 22px;">
+            <!-- Row 1: Name + Government Fees -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+              <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 10px;">
+                <div style="display:inline-block;background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px;margin-top:-10px;">Name <span style="color:#e91e8c;">*</span></div>
+                <input type="text" id="svc-name" placeholder="Enter Service Name" style="width:100%;border:none;outline:none;font-size:13px;color:#334155;background:transparent;"/>
+              </div>
+              <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 10px;">
+                <div style="display:inline-block;background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px;margin-top:-10px;">Government Fees <span style="color:#e91e8c;">*</span></div>
+                <input type="number" id="svc-govfee" placeholder="Enter Government Fees" oninput="calcStdCharges()" style="width:100%;border:none;outline:none;font-size:13px;color:#334155;background:transparent;"/>
+              </div>
+            </div>
+            <!-- Row 2: Service Fee + Standard Charges (auto) -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+              <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 10px;">
+                <div style="display:inline-block;background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px;margin-top:-10px;">Service Fee <span style="color:#e91e8c;">*</span></div>
+                <input type="number" id="svc-svcfee" placeholder="Enter Service Fee" oninput="calcStdCharges()" style="width:100%;border:none;outline:none;font-size:13px;color:#334155;background:transparent;"/>
+              </div>
+              <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 10px;background:#f8fafc;">
+                <div style="display:inline-block;background:#334155;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px;margin-top:-10px;">Standard Charges (Auto-calculated)</div>
+                <input type="text" id="svc-stdcharge" readonly placeholder="" style="width:100%;border:none;outline:none;font-size:13px;color:#0e7490;font-weight:700;background:transparent;cursor:not-allowed;"/>
+              </div>
+            </div>
+            <!-- Row 3: Expected Day (half width) -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+              <div style="border:1.5px solid #334155;border-radius:6px;padding:2px 12px 10px;">
+                <div style="display:inline-block;background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px;margin-top:-10px;">Expected Day <span style="color:#e91e8c;">*</span></div>
+                <input type="number" id="svc-expday" value="1" min="1" style="width:100%;border:none;outline:none;font-size:13px;color:#334155;background:transparent;"/>
+              </div>
+              <div></div>
+            </div>
+            <!-- Buttons -->
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <button onclick="closeAddServiceModal()" style="padding:10px 26px;border-radius:7px;border:none;background:#64748b;color:#fff;font-weight:700;font-size:13px;cursor:pointer;">Close</button>
+              <button onclick="addService()" style="padding:10px 26px;border-radius:7px;border:none;background:#0e7490;color:#fff;font-weight:700;font-size:13px;cursor:pointer;">Add Service</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== REPORTS ===== -->
+    <div class="page" id="page-reports">
+      <div class="section-box">
+        <div class="sec-head">📈 Reports</div>
+        <div class="sec-body">
+          <div class="filter-box">
+            <div class="filter-grid">
+              <div class="filter-field"><label>Date From</label><input type="date" id="rep-from"/></div>
+              <div class="filter-field"><label>Date To</label><input type="date" id="rep-to"/></div>
+              <div class="filter-field"><label>Report Type</label>
+                <select id="rep-type" style="width:100%;border:1px solid #cbd5e1;border-radius:5px;padding:7px 10px;font-size:13px;outline:none;">
+                  <option>All</option><option>Daily In/Out</option><option>Customers</option><option>Leads</option><option>Reminders</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn-sm btn-teal" onclick="generateReport()">Generate Report</button>
+              <button class="btn-sm btn-outline" onclick="exportCSV('report')">Export CSV</button>
+              <button class="btn-sm btn-outline" onclick="window.print()">Print</button>
+            </div>
+          </div>
+
+          <div class="summary-grid" style="margin-top:16px;">
+            <div class="sum-card"><div><div class="sum-label">Total IN (Period)</div><div class="sum-val green">₹<span id="rep-in">0.00</span></div></div><span class="sum-icon">⬇️</span></div>
+            <div class="sum-card"><div><div class="sum-label">Total OUT (Period)</div><div class="sum-val red">₹<span id="rep-out">0.00</span></div></div><span class="sum-icon">⬆️</span></div>
+            <div class="sum-card"><div><div class="sum-label">Net Balance</div><div class="sum-val" id="rep-net-card">₹0.00</div></div><span class="sum-icon">⚖️</span></div>
+            <div class="sum-card"><div><div class="sum-label">Total Customers</div><div class="sum-val" id="rep-cust">0</div></div><span class="sum-icon">👥</span></div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <div class="sec-head" style="border-radius:6px;margin-bottom:10px;">Detailed Entries</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Date</th><th>Type</th><th>Name</th><th>Description</th><th>Amount</th></tr></thead>
+                <tbody id="rep-tbody"></tbody>
+              </table>
+              <div id="rep-nodata" class="no-data" style="display:none;">No data available in table</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end page-content -->
+</div><!-- end main -->
+
+<script>
+// ========== DATA STORE ==========
+let data = {
+  ioEntries: [],
+  leads: [],
+  reminders: [],
+  customers: [],
+  services: [],
+  openingBalance: 0
+};
+
+// ========== GOOGLE SHEET CONFIG ==========
+// PASTE YOUR DEPLOYED URL BELOW (replace the text inside the quotes)
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbyykhNKJmbKPkI40-O4r3zoDdmsJ_w2KZZxMrhBf1Tf0_PGOzWzj52rk1pKMv2CM8ICHQ/exec";
+
+// Load from localStorage (instant load)
+function loadData() {
+  const saved = localStorage.getItem('mane_csc_data');
+  if (saved) data = JSON.parse(saved);
+}
+
+// Save to localStorage + Google Sheets
+function saveData() {
+  localStorage.setItem('mane_csc_data', JSON.stringify(data));
+  syncToSheet();
+}
+
+// Sync full data to Google Sheet
+function syncToSheet() {
+  if (!SHEET_URL || SHEET_URL.includes("PASTE_YOUR")) return;
+  const formData = new FormData();
+  formData.append("payload", JSON.stringify({ action: "saveAll", data: data }));
+  fetch(SHEET_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: formData
+  })
+  .then(() => showSyncBadge("✅ Saved to Sheet"))
+  .catch(() => showSyncBadge("⚠️ Sheet sync failed"));
+}
+
+// Show sync status badge
+function showSyncBadge(msg) {
+  let badge = document.getElementById('sync-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.id = 'sync-badge';
+    badge.style.cssText = 'position:fixed;bottom:18px;right:18px;background:#1e293b;color:#fff;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;transition:opacity 0.5s;';
+    document.body.appendChild(badge);
+  }
+  badge.textContent = msg;
+  badge.style.opacity = '1';
+  setTimeout(() => { badge.style.opacity = '0'; }, 2500);
+}
+
+loadData();
+
+// ========== UTILS ==========
+function today() {
+  return new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function nowTime() {
+  return new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+}
+function todayISO() {
+  return new Date().toISOString().split('T')[0];
+}
+function daysBetween(dateStr) {
+  const d = new Date(dateStr);
+  const now = new Date(); now.setHours(0,0,0,0);
+  const diff = Math.round((d - now) / (1000*60*60*24));
+  return diff;
+}
+function genId() {
+  return 'REC' + Date.now().toString().slice(-6);
+}
+
+function toggleLeadsMenu() {
+  const sub = document.getElementById('leads-submenu');
+  const arrow = document.getElementById('leads-arrow');
+  const open = sub.style.display !== 'none';
+  sub.style.display = open ? 'none' : 'block';
+  arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+// ========== PAGE NAV ==========
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + page);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const idx = ['dashboard','dailyinout','add-lead','view-leads','reminders','bulksending','customers','services','reports'];
+  const navs = document.querySelectorAll('.nav-item');
+  const i = idx.indexOf(page);
+  if (i >= 0 && navs[i]) navs[i].classList.add('active');
+  // highlight parent nav for leads sub-pages
+  if (page === 'add-lead' || page === 'view-leads') {
+    document.getElementById('nav-leads-parent').classList.add('active');
+    document.getElementById('leads-submenu').style.display = 'block';
+    document.getElementById('leads-arrow').style.transform = 'rotate(180deg)';
+  }
+  updateDashboard();
+  if (page === 'dailyinout') renderIOTable();
+  if (page === 'reminders') renderRemindersTable();
+  if (page === 'view-leads') renderLeadsTable();
+  if (page === 'customers') renderCustomersTable();
+  if (page === 'services') renderServicesTable();
+  if (page === 'add-lead') initAddLeadForm();
+}
+
+// ========== DATE INIT ==========
+document.getElementById('today-date').textContent = today();
+document.getElementById('io-date').textContent = today();
+
+// ========== DASHBOARD ==========
+function updateDashboard() {
+  const todayStr = todayISO();
+  const todayEntries = data.ioEntries.filter(e => e.dateISO === todayStr);
+  const totalIn = todayEntries.filter(e=>e.type==='IN').reduce((s,e)=>s+e.amount,0);
+  const totalOut = todayEntries.filter(e=>e.type==='OUT').reduce((s,e)=>s+e.amount,0);
+  const allIn = data.ioEntries.filter(e=>e.type==='IN').reduce((s,e)=>s+e.amount,0);
+  const allOut = data.ioEntries.filter(e=>e.type==='OUT').reduce((s,e)=>s+e.amount,0);
+  const closing = data.openingBalance + allIn - allOut;
+  const todayBal = data.openingBalance + totalIn - totalOut;
+
+  document.getElementById('db-opening').textContent = data.openingBalance.toFixed(2);
+  document.getElementById('db-in').textContent = totalIn.toFixed(2);
+  document.getElementById('db-out').textContent = totalOut.toFixed(2);
+  document.getElementById('db-today-bal').textContent = todayBal.toFixed(2);
+  document.getElementById('db-closing').textContent = closing.toFixed(2);
+  document.getElementById('db-today-recv').textContent = totalIn.toFixed(2);
+  document.getElementById('db-today-pend').textContent = totalOut.toFixed(2);
+  document.getElementById('db-today-biz').textContent = totalIn.toFixed(2);
+  document.getElementById('db-total-recv').textContent = allIn.toFixed(2);
+  document.getElementById('db-total-pend').textContent = allOut.toFixed(2);
+  document.getElementById('db-total-biz').textContent = (allIn + allOut).toFixed(2);
+  document.getElementById('db-total-cust').textContent = data.customers.length;
+  document.getElementById('db-total-svc').textContent = data.services.length;
+  document.getElementById('db-total-leads').textContent = data.leads.length;
+  const pendRem = data.reminders.filter(r => daysBetween(r.expectedDate) >= 0).length;
+  document.getElementById('db-pend-rem').textContent = pendRem;
+}
+
+// ========== DAILY IN/OUT ==========
+function addEntry(type) {
+  const name = document.getElementById(type.toLowerCase()+'-name').value.trim();
+  const number = document.getElementById(type.toLowerCase()+'-number').value.trim();
+  const desc = document.getElementById(type.toLowerCase()+'-desc').value.trim();
+  const amount = parseFloat(document.getElementById(type.toLowerCase()+'-amount').value);
+  if (!amount || isNaN(amount)) { alert('Amount is required!'); return; }
+  data.ioEntries.push({ id: genId(), type, name, number, desc, amount, time: nowTime(), dateISO: todayISO() });
+  saveData(); renderIOTable(); updateIOBalances(); updateDashboard();
+  document.getElementById(type.toLowerCase()+'-name').value = '';
+  document.getElementById(type.toLowerCase()+'-number').value = '';
+  document.getElementById(type.toLowerCase()+'-desc').value = '';
+  document.getElementById(type.toLowerCase()+'-amount').value = '';
+}
+
+function updateIOBalances() {
+  const todayStr = todayISO();
+  const todayE = data.ioEntries.filter(e => e.dateISO === todayStr);
+  const tIn = todayE.filter(e=>e.type==='IN').reduce((s,e)=>s+e.amount,0);
+  const tOut = todayE.filter(e=>e.type==='OUT').reduce((s,e)=>s+e.amount,0);
+  const allIn = data.ioEntries.filter(e=>e.type==='IN').reduce((s,e)=>s+e.amount,0);
+  const allOut = data.ioEntries.filter(e=>e.type==='OUT').reduce((s,e)=>s+e.amount,0);
+  document.getElementById('io-opening').textContent = data.openingBalance.toFixed(2);
+  document.getElementById('io-in').textContent = tIn.toFixed(2);
+  document.getElementById('io-out').textContent = tOut.toFixed(2);
+  document.getElementById('io-balance').textContent = (data.openingBalance+tIn-tOut).toFixed(2);
+  document.getElementById('io-closing').textContent = (data.openingBalance+allIn-allOut).toFixed(2);
+}
+
+let showAll = false;
+function toggleAllEntries() { showAll = !showAll; renderIOTable(); }
+
+function renderIOTable() {
+  const search = document.getElementById('io-search').value.toLowerCase();
+  const todayStr = todayISO();
+  let entries = showAll ? data.ioEntries : data.ioEntries.filter(e => e.dateISO === todayStr);
+  if (search) entries = entries.filter(e =>
+    (e.name||'').toLowerCase().includes(search) ||
+    (e.number||'').toLowerCase().includes(search) ||
+    (e.desc||'').toLowerCase().includes(search)
+  );
+  const tbody = document.getElementById('io-tbody');
+  tbody.innerHTML = '';
+  entries.forEach((e,i) => {
+    tbody.innerHTML += `<tr>
+      <td><button class="btn-sm" style="background:#fee2e2;color:#dc2626;border:none;cursor:pointer;" onclick="deleteIOEntry(${data.ioEntries.indexOf(e)})"><i class="fas fa-trash"></i></button></td>
+      <td>${e.time}</td>
+      <td><span class="badge ${e.type.toLowerCase()}">${e.type}</span></td>
+      <td>${e.name||'-'} ${e.number ? '| '+e.number : ''}</td>
+      <td>${e.desc||'-'}</td>
+      <td style="font-weight:700;color:${e.type==='IN'?'#22c55e':'#ef4444'}">₹${e.amount.toFixed(2)}</td>
+    </tr>`;
+  });
+  document.getElementById('io-nodata').style.display = entries.length ? 'none' : 'block';
+  document.getElementById('io-footer').textContent = `Showing ${entries.length} of ${data.ioEntries.length} entries`;
+  updateIOBalances();
+}
+
+function deleteIOEntry(i) {
+  if(confirm('Delete this entry?')) { data.ioEntries.splice(i,1); saveData(); renderIOTable(); updateDashboard(); }
+}
+
+// ========== REMINDERS ==========
+function addReminder() {
+  const name = document.getElementById('rem-new-name').value.trim();
+  const num = document.getElementById('rem-new-num').value.trim();
+  const svc = document.getElementById('rem-new-svc').value.trim();
+  const expDate = document.getElementById('rem-new-date').value;
+  const followup = document.getElementById('rem-new-followup').value;
+  const query = document.getElementById('rem-new-query').value.trim();
+  if (!name || !expDate) { alert('Customer Name and Expected Date are required!'); return; }
+  data.reminders.push({ id: genId(), name, num, svc, expectedDate: expDate, followupDate: followup, query, dateISO: todayISO() });
+  saveData(); renderRemindersTable(); updateDashboard();
+  ['rem-new-name','rem-new-num','rem-new-svc','rem-new-date','rem-new-followup','rem-new-query'].forEach(id => document.getElementById(id).value = '');
+}
+
+function renderRemindersTable(filtered) {
+  const search = document.getElementById('rem-search').value.toLowerCase();
+  let rows = filtered || data.reminders;
+  if (search) rows = rows.filter(r =>
+    r.name.toLowerCase().includes(search) ||
+    (r.num||'').includes(search) ||
+    (r.svc||'').toLowerCase().includes(search)
+  );
+  const tbody = document.getElementById('rem-tbody');
+  tbody.innerHTML = '';
+  rows.forEach((r,i) => {
+    const days = daysBetween(r.expectedDate);
+    const statusClass = days < 0 ? 'overdue' : days <= 3 ? 'pending' : 'done';
+    const statusText = days < 0 ? 'Overdue' : days === 0 ? 'Today' : `${days} days`;
+    tbody.innerHTML += `<tr>
+      <td><button class="btn-sm" style="background:#fee2e2;color:#dc2626;border:none;cursor:pointer;" onclick="deleteReminder(${data.reminders.indexOf(r)})"><i class="fas fa-trash"></i></button></td>
+      <td>${r.id}</td>
+      <td>${r.expectedDate}</td>
+      <td><span class="status ${statusClass}">${statusText}</span></td>
+      <td>${r.name}</td>
+      <td>${r.num||'-'}</td>
+      <td>${r.svc||'-'}</td>
+      <td>${r.followupDate||'-'}</td>
+      <td>${r.followupDate||'-'}</td>
+      <td>${r.query||'-'}</td>
+    </tr>`;
+  });
+  document.getElementById('rem-nodata').style.display = rows.length ? 'none' : 'block';
+  document.getElementById('rem-footer').textContent = `Showing ${rows.length} of ${data.reminders.length} entries`;
+}
+
+function applyReminderFilters() {
+  const from = document.getElementById('rem-datefrom').value;
+  const to = document.getElementById('rem-dateto').value;
+  const name = document.getElementById('rem-cname').value.toLowerCase();
+  const num = document.getElementById('rem-cnum').value;
+  let rows = data.reminders;
+  if (from) rows = rows.filter(r => r.expectedDate >= from);
+  if (to) rows = rows.filter(r => r.expectedDate <= to);
+  if (name) rows = rows.filter(r => r.name.toLowerCase().includes(name));
+  if (num) rows = rows.filter(r => (r.num||'').includes(num));
+  renderRemindersTable(rows);
+}
+function clearReminderFilters() {
+  ['rem-datefrom','rem-dateto','rem-cname','rem-cnum'].forEach(id => document.getElementById(id).value = '');
+  renderRemindersTable();
+}
+function deleteReminder(i) {
+  if(confirm('Delete this reminder?')) { data.reminders.splice(i,1); saveData(); renderRemindersTable(); updateDashboard(); }
+}
+
+// ========== LEADS ==========
+let alServiceCount = 0;
+let alSelectedCustomer = null;
+
+function initAddLeadForm() {
+  // Set today's date
+  const today = todayISO();
+  document.getElementById('al-entry-date').value = today;
+  document.getElementById('al-pay-date').value = today;
+  // Clear fields
+  document.getElementById('al-customer-search').value = '';
+  document.getElementById('al-contact').value = '';
+  document.getElementById('al-pay-received').value = '0';
+  document.getElementById('al-pay-pending').value = '0.00';
+  document.getElementById('al-notes').value = '';
+  document.getElementById('al-total-charges').textContent = '0.00';
+  document.getElementById('al-services-container').innerHTML = '';
+  alServiceCount = 0;
+  alSelectedCustomer = null;
+  addLeadService(); // Add one service row by default
+}
+
+function addLeadService() {
+  alServiceCount++;
+  const idx = alServiceCount;
+  const svcOptions = data.services.map(s => `<option value="${s.id}" data-price="${s.stdCharge||s.price||0}">${s.name}</option>`).join('');
+  const div = document.createElement('div');
+  div.id = 'al-svc-row-' + idx;
+  div.style.cssText = 'display:grid;grid-template-columns:2fr 1.5fr 1fr auto;gap:12px;align-items:end;margin-bottom:12px;padding:14px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0;';
+  div.innerHTML = `
+    <div>
+      <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Service <span style="color:red">*</span></label>
+      <select id="al-svc-${idx}" style="width:100%;border:1.5px solid #cbd5e1;border-radius:6px;padding:9px 10px;font-size:13px;outline:none;background:#fff;" onchange="onLeadSvcChange(${idx})">
+        <option value="">Select Service</option>${svcOptions}
+      </select>
+    </div>
+    <div>
+      <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Service Charge <span style="color:red">*</span></label>
+      <div style="display:flex;gap:0;">
+        <input type="number" id="al-charge-${idx}" value="" placeholder="" style="flex:1;border:1.5px solid #cbd5e1;border-radius:6px 0 0 6px;padding:9px 10px;font-size:13px;outline:none;" oninput="calcLeadTotal()"/>
+        <select id="al-charge-type-${idx}" style="border:1.5px solid #cbd5e1;border-left:none;border-radius:0 6px 6px 0;padding:9px 6px;font-size:12px;outline:none;background:#fff;">
+          <option>Auto</option><option>Manual</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <label style="font-size:11px;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Expected/Received Date</label>
+      <input type="date" id="al-svc-date-${idx}" style="width:100%;border:1.5px solid #cbd5e1;border-radius:6px;padding:9px 10px;font-size:13px;outline:none;"/>
+    </div>
+    <div style="display:flex;align-items:flex-end;padding-bottom:2px;">
+      <button onclick="removeLeadService(${idx})" style="background:#e91e8c;color:#fff;border:none;border-radius:6px;padding:9px 14px;font-size:13px;cursor:pointer;white-space:nowrap;"><i class="fas fa-trash"></i> Remove</button>
+    </div>`;
+  document.getElementById('al-services-container').appendChild(div);
+}
+
+function onLeadSvcChange(idx) {
+  const sel = document.getElementById('al-svc-' + idx);
+  const opt = sel.options[sel.selectedIndex];
+  const price = opt ? (opt.getAttribute('data-price') || 0) : 0;
+  document.getElementById('al-charge-' + idx).value = price;
+  calcLeadTotal();
+}
+
+function removeLeadService(idx) {
+  const el = document.getElementById('al-svc-row-' + idx);
+  if (el) el.remove();
+  calcLeadTotal();
+}
+
+function calcLeadTotal() {
+  let total = 0;
+  document.querySelectorAll('[id^="al-charge-"]').forEach(input => {
+    if (!input.id.includes('type')) {
+      total += parseFloat(input.value) || 0;
+    }
+  });
+  document.getElementById('al-total-charges').textContent = total.toFixed(2);
+  calcLeadPending();
+}
+
+function calcLeadPending() {
+  const total = parseFloat(document.getElementById('al-total-charges').textContent) || 0;
+  const received = parseFloat(document.getElementById('al-pay-received').value) || 0;
+  document.getElementById('al-pay-pending').value = (total - received).toFixed(2);
+}
+
+function searchLeadCustomer() {
+  const val = document.getElementById('al-customer-search').value.trim().toLowerCase();
+  const drop = document.getElementById('al-customer-drop');
+  drop.innerHTML = '';
+  if (val.length < 1) { drop.style.display = 'none'; return; }
+  const matches = data.customers.filter(c =>
+    c.name.toLowerCase().includes(val) ||
+    (c.phone||'').includes(val)
+  ).slice(0, 6);
+  if (!matches.length) { drop.style.display = 'none'; return; }
+  matches.forEach(c => {
+    const item = document.createElement('div');
+    item.style.cssText = 'padding:9px 14px;cursor:pointer;font-size:13px;color:#334155;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:10px;';
+    const initials = c.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const colors = ['#6d28d9','#0e7490','#be185d','#d97706','#16a34a'];
+    const col = colors[c.name.charCodeAt(0) % colors.length];
+    item.innerHTML = `<span style="width:28px;height:28px;border-radius:50%;background:${col};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${initials}</span>
+      <span><strong>${c.name}</strong> <span style="color:#94a3b8;font-size:12px;">${c.phone}</span></span>`;
+    item.onmouseover = () => item.style.background = '#f0f9ff';
+    item.onmouseout = () => item.style.background = '';
+    item.onclick = () => {
+      alSelectedCustomer = c;
+      document.getElementById('al-customer-search').value = c.name;
+      document.getElementById('al-contact').value = c.phone;
+      drop.style.display = 'none';
+    };
+    drop.appendChild(item);
+  });
+  drop.style.display = 'block';
+}
+
+document.addEventListener('click', function(e) {
+  const drop = document.getElementById('al-customer-drop');
+  const inp = document.getElementById('al-customer-search');
+  if (drop && inp && !drop.contains(e.target) && !inp.contains(e.target)) drop.style.display = 'none';
+});
+
+function openQuickAddCustomer() {
+  const name = document.getElementById('al-customer-search').value.trim();
+  const phone = document.getElementById('al-contact').value.trim();
+  if (!name) { alert('Enter a customer name to quick add'); return; }
+  if (!phone) { alert('Enter a contact number to quick add'); return; }
+  if (data.customers.find(c => c.phone === phone)) { alert('Customer with this number already exists!'); return; }
+  const newCust = { id: genId(), name, phone, address: '', service: '', amount: 0, payment: 'General', categories: [], dateISO: todayISO() };
+  data.customers.push(newCust);
+  saveData();
+  alSelectedCustomer = newCust;
+  alert('Customer "' + name + '" added successfully!');
+}
+
+function saveLeadAndReceipt() {
+  const entryDate = document.getElementById('al-entry-date').value;
+  const custName = document.getElementById('al-customer-search').value.trim();
+  const contact = document.getElementById('al-contact').value.trim();
+  if (!custName) { alert('Please select a customer!'); return; }
+
+  // Collect services
+  const serviceRows = [];
+  let hasServiceError = false;
+  document.querySelectorAll('[id^="al-svc-row-"]').forEach(row => {
+    const idNum = row.id.replace('al-svc-row-', '');
+    const svcSel = document.getElementById('al-svc-' + idNum);
+    const charge = document.getElementById('al-charge-' + idNum);
+    const dateEl = document.getElementById('al-svc-date-' + idNum);
+    if (!svcSel || !svcSel.value) { hasServiceError = true; return; }
+    serviceRows.push({
+      serviceId: svcSel.value,
+      serviceName: svcSel.options[svcSel.selectedIndex].text,
+      charge: parseFloat(charge.value) || 0,
+      date: dateEl ? dateEl.value : ''
+    });
+  });
+  if (hasServiceError) { alert('Please select a service for all rows, or remove empty rows.'); return; }
+  if (!serviceRows.length) { alert('Please add at least one service!'); return; }
+
+  const total = parseFloat(document.getElementById('al-total-charges').textContent) || 0;
+  const received = parseFloat(document.getElementById('al-pay-received').value) || 0;
+  const pending = parseFloat(document.getElementById('al-pay-pending').value) || 0;
+  const payType = document.getElementById('al-pay-type').value;
+  const payDate = document.getElementById('al-pay-date').value;
+  const notes = document.getElementById('al-notes').value.trim();
+
+  const receiptNo = 'REC-' + new Date().getFullYear() + '-' + String(data.leads.length + 1).padStart(5, '0');
+
+  const lead = {
+    id: genId(),
+    receiptNo,
+    name: custName,
+    phone: contact,
+    entryDate,
+    services: serviceRows,
+    totalCharge: total,
+    received,
+    pending,
+    payType,
+    payDate,
+    notes,
+    dateISO: entryDate || todayISO(),
+    status: pending <= 0 ? 'Paid' : received > 0 ? 'Partial' : 'Pending'
+  };
+  data.leads.push(lead);
+  saveData();
+  updateDashboard();
+
+  // Auto-send WhatsApp message to customer
+  autoSendWhatsApp(lead);
+
+  // Show receipt
+  showReceiptModal(lead);
+}
+
+let _currentReceiptLead = null;
+
+function showReceiptModal(lead) {
+  _currentReceiptLead = lead;
+  const svcRows = lead.services.map((s, i) => `
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;">${i+1}. ${s.serviceName}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;">${s.date || '-'}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:right;font-weight:700;">₹${s.charge.toFixed(2)}</td>
+    </tr>`).join('');
+
+  const now = new Date();
+  const genTime = now.toLocaleDateString('en-IN') + ' ' + now.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+
+  document.getElementById('receipt-content').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+      <div style="text-align:center;color:#94a3b8;font-size:11px;">
+        <div style="width:60px;height:60px;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;margin:0 auto 4px;font-size:9px;color:#cbd5e1;">Scan to verify receipt</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:18px;font-weight:800;color:#1e293b;">Mane Multiservices</div>
+        <div style="font-size:12px;color:#475569;">Contact: 9307965722</div>
+        <div style="font-size:12px;color:#475569;">Email: mane@multiservices.com</div>
+        <div style="font-size:12px;color:#475569;">Address: Nashik, Maharashtra</div>
+        <div style="font-size:14px;font-weight:700;color:#0e7490;margin-top:6px;">Receipt No: ${lead.receiptNo}</div>
+      </div>
+    </div>
+    <div style="text-align:right;font-size:12px;color:#475569;margin-bottom:12px;">Date: ${lead.entryDate}</div>
+    <hr style="border:none;border-top:1px dashed #cbd5e1;margin:10px 0;"/>
+    <div style="margin-bottom:6px;"><strong>Customer Name:</strong> ${lead.name}</div>
+    <div style="margin-bottom:6px;"><strong>Contact Number:</strong> ${lead.phone}</div>
+    <hr style="border:none;border-top:1px dashed #cbd5e1;margin:10px 0;"/>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+      <thead>
+        <tr style="background:#f8fafc;">
+          <th style="padding:8px 10px;text-align:left;font-size:12px;color:#475569;">Service Name</th>
+          <th style="padding:8px 10px;text-align:left;font-size:12px;color:#475569;">Expected Date</th>
+          <th style="padding:8px 10px;text-align:right;font-size:12px;color:#475569;">Charge</th>
+        </tr>
+      </thead>
+      <tbody>${svcRows}</tbody>
+    </table>
+    <div style="text-align:right;margin-bottom:4px;font-size:13px;"><strong>Total: ₹${lead.totalCharge.toFixed(2)}</strong></div>
+    <div style="text-align:right;margin-bottom:4px;font-size:13px;">Payment Received: ₹${lead.received.toFixed(2)} (${lead.payType})</div>
+    <div style="text-align:right;margin-bottom:4px;font-size:13px;color:${lead.pending>0?'#ef4444':'#22c55e'};">Pending: ₹${lead.pending.toFixed(2)}</div>
+    ${lead.notes ? `<div style="margin-top:10px;font-size:12px;color:#64748b;"><strong>Notes:</strong> ${lead.notes}</div>` : ''}
+    <hr style="border:none;border-top:1px dashed #cbd5e1;margin:14px 0 8px;"/>
+    <div style="text-align:center;font-size:11px;color:#94a3b8;">Thank you for your Service! | System Generated on: ${genTime}</div>`;
+  document.getElementById('receipt-modal').style.display = 'flex';
+}
+
+function autoSendWhatsApp(lead) {
+  const svcLines = lead.services.map(s =>
+    `  • ${s.serviceName}${s.date ? ' (दि. ' + s.date + ')' : ''} - ₹${Number(s.charge).toFixed(2)}`
+  ).join('\n');
+
+  const statusText = Number(lead.pending) <= 0
+    ? '✅ पूर्ण भरलेली'
+    : Number(lead.received) > 0
+    ? '⚠️ अंशतः भरलेली'
+    : '❌ बाकी आहे';
+
+  const msg =
+`🧾 *मेन मल्टीसर्व्हिसेस - पावती*
+━━━━━━━━━━━━━━━━━━━━
+नमस्कार *${lead.name}*,
+आपली सेवा यशस्वीरित्या नोंदवली गेली आहे. 🙏
+
+📋 *सेवा तपशील:*
+${svcLines}
+
+💰 *एकूण रक्कम:* ₹${Number(lead.totalCharge).toFixed(2)}
+✅ *भरलेली रक्कम:* ₹${Number(lead.received).toFixed(2)} (${lead.payType || 'Cash'})
+⏳ *बाकी रक्कम:* ₹${Number(lead.pending).toFixed(2)}
+📊 *स्थिती:* ${statusText}
+
+🗓 *पावती क्र.:* ${lead.receiptNo}
+📅 *दिनांक:* ${lead.entryDate || lead.dateISO}
+━━━━━━━━━━━━━━━━━━━━
+Mane Multiservices (8600443830)`;
+
+  let phone = (lead.phone || '').replace(/\D/g, '');
+  if (phone.startsWith('0')) phone = phone.slice(1);
+  if (phone.length === 10) phone = '91' + phone;
+  if (!phone || phone.length < 12) return;
+
+  const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl, '_blank');
+}
+
+function closeReceiptModal() {
+  document.getElementById('receipt-modal').style.display = 'none';
+  showPage('view-leads');
+}
+
+function printReceipt() {
+  const content = document.getElementById('receipt-content').innerHTML;
+  const w = window.open('', '_blank', 'width=700,height=600');
+  w.document.write(`<html><head><title>Receipt</title><style>body{font-family:'Segoe UI',sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{padding:8px 10px;}</style></head><body>${content}</body></html>`);
+  w.document.close();
+  w.print();
+}
+
+function cancelAddLead() {
+  showPage('view-leads');
+}
+
+function renderLeadsTable() {
+  const search = (document.getElementById('lead-search')||{}).value?.toLowerCase() || '';
+  let rows = data.leads;
+  if (search) rows = rows.filter(r =>
+    r.name.toLowerCase().includes(search) ||
+    (r.phone||'').includes(search) ||
+    (r.services||[]).some(s => s.serviceName.toLowerCase().includes(search))
+  );
+  const tbody = document.getElementById('leads-tbody');
+  tbody.innerHTML = '';
+  rows.forEach((r) => {
+    const svcNames = r.services ? r.services.map(s=>s.serviceName).join(', ') : (r.service||'-');
+    const statusColor = r.status==='Paid'?'done':r.status==='Partial'?'pending':'overdue';
+    tbody.innerHTML += `<tr>
+      <td>
+        <button class="btn-sm btn-teal" style="margin-right:4px;" onclick="viewLeadReceipt('${r.id}')"><i class="fas fa-receipt"></i></button>
+        <button class="btn-sm" style="background:#fee2e2;color:#dc2626;border:none;cursor:pointer;" onclick="deleteLead('${r.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+      <td>${r.entryDate||r.dateISO}</td>
+      <td>${r.name}</td>
+      <td>${r.phone||'-'}</td>
+      <td>${svcNames}</td>
+      <td style="font-weight:700;">₹${(r.totalCharge||0).toFixed(2)}</td>
+      <td style="color:#22c55e;font-weight:700;">₹${(r.received||0).toFixed(2)}</td>
+      <td style="color:#ef4444;font-weight:700;">₹${(r.pending||0).toFixed(2)}</td>
+      <td>${r.notes||'-'}</td>
+      <td><span class="status ${statusColor}">${r.status||'Pending'}</span></td>
+    </tr>`;
+  });
+  document.getElementById('leads-nodata').style.display = rows.length ? 'none' : 'block';
+  document.getElementById('leads-footer').textContent = `Showing ${rows.length} of ${data.leads.length} entries`;
+}
+
+function viewLeadReceipt(id) {
+  const lead = data.leads.find(r => r.id === id);
+  if (!lead) return;
+  // Normalize old leads (without services array) for receipt display
+  if (!lead.services) {
+    lead.services = [{ serviceName: lead.service||'Service', charge: lead.totalCharge||0, date: '' }];
+    lead.received = lead.received || 0;
+    lead.pending = lead.pending || 0;
+    lead.payType = lead.payType || 'Cash';
+    lead.receiptNo = lead.receiptNo || lead.id;
+    lead.entryDate = lead.entryDate || lead.dateISO;
+  }
+  showReceiptModal(lead);
+}
+
+function deleteLead(id) {
+  if(confirm('Delete this lead?')) { data.leads = data.leads.filter(r=>r.id!==id); saveData(); renderLeadsTable(); updateDashboard(); }
+}
+
+function addLead() {} // legacy stub
+function clearLeadForm() {} // legacy stub
+
+// ========== CUSTOMERS ==========
+let custPage = 1; const custPerPage = 10;
+let custSortKey = 'dateISO'; let custSortDir = 1;
+
+// Categories saved permanently in localStorage (separate from data)
+function loadCustCategories() {
+  return JSON.parse(localStorage.getItem('mane_cust_categories') || '[]');
+}
+function saveCustCategories(cats) {
+  localStorage.setItem('mane_cust_categories', JSON.stringify(cats));
+}
+
+// ---- CATEGORY MODAL ----
+function openAddCategoryModal() {
+  // Set today's date
+  document.getElementById('new-cat-date').value = todayISO();
+  renderRecentCategories();
+  document.getElementById('add-cat-modal').style.display = 'flex';
+}
+function closeAddCategoryModal() {
+  document.getElementById('add-cat-modal').style.display = 'none';
+  document.getElementById('new-cat-name').value = '';
+}
+function renderRecentCategories() {
+  const cats = loadCustCategories();
+  const el = document.getElementById('recent-cat-list');
+  if (!cats.length) {
+    el.innerHTML = '<span style="color:#94a3b8;font-size:13px;">No categories added yet.</span>';
+  } else {
+    el.innerHTML = cats.map(c =>
+      `<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;border-radius:20px;padding:3px 12px;margin:3px 4px 3px 0;font-size:12px;font-weight:600;color:#334155;">
+        ${c.name}
+        <button onclick="deleteCustCategory('${c.name}')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:13px;line-height:1;padding:0 0 0 4px;">&times;</button>
+      </span>`
+    ).join('');
+  }
+}
+function deleteCustCategory(name) {
+  let cats = loadCustCategories().filter(c => c.name !== name);
+  saveCustCategories(cats);
+  renderRecentCategories();
+}
+function addCategory() {
+  const name = document.getElementById('new-cat-name').value.trim();
+  const date = document.getElementById('new-cat-date').value;
+  if (!name) { alert('Category name is required!'); return; }
+  let cats = loadCustCategories();
+  if (cats.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+    alert('This category already exists!'); return;
+  }
+  cats.push({ name, date: date || todayISO() });
+  saveCustCategories(cats);
+  document.getElementById('new-cat-name').value = '';
+  document.getElementById('new-cat-date').value = todayISO();
+  renderRecentCategories();
+}
+
+// ---- CUSTOMER MODAL ----
+function openAddCustomerModal() {
+  renderCustCategoryCheckboxes();
+  document.getElementById('add-cust-modal').style.display = 'flex';
+}
+function closeAddCustomerModal() {
+  document.getElementById('add-cust-modal').style.display = 'none';
+  ['cust-name','cust-phone','cust-address'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('cust-service').value = '';
+}
+function renderCustCategoryCheckboxes() {
+  const cats = loadCustCategories();
+  const el = document.getElementById('cust-cat-checkboxes');
+  if (!cats.length) {
+    el.innerHTML = '<span style="color:#94a3b8;font-size:13px;">No categories available. Please add categories first.</span>';
+    return;
+  }
+  el.innerHTML = cats.map(c =>
+    `<label style="display:inline-flex;align-items:center;gap:7px;margin:5px 14px 5px 0;font-size:13px;color:#334155;cursor:pointer;">
+      <input type="checkbox" value="${c.name}" style="width:15px;height:15px;accent-color:#0e7490;cursor:pointer;"> ${c.name}
+    </label>`
+  ).join('');
+}
+function getSelectedCategories() {
+  return [...document.querySelectorAll('#cust-cat-checkboxes input[type=checkbox]:checked')].map(cb => cb.value);
+}
+
+function addCustomer() {
+  const name = document.getElementById('cust-name').value.trim();
+  const phone = document.getElementById('cust-phone').value.trim();
+  const address = document.getElementById('cust-address').value.trim();
+  const service = document.getElementById('cust-service').value.trim();
+  const categories = getSelectedCategories();
+  if (!name || !phone) { alert('Name and Number are required!'); return; }
+  // payment field kept for backward compat (use first selected category or 'General')
+  const payment = categories.length ? categories[0] : 'General';
+  data.customers.push({ id: genId(), name, phone, address, service, amount: 0, payment, categories, dateISO: todayISO() });
+  saveData(); renderCustomersTable(); updateDashboard();
+  closeAddCustomerModal();
+}
+
+function sortCust(key) {
+  if (custSortKey === key) custSortDir *= -1; else { custSortKey = key; custSortDir = 1; }
+  renderCustomersTable();
+}
+function custPagePrev() { if (custPage > 1) { custPage--; renderCustomersTable(); } }
+function custPageNext() {
+  const total = getFilteredCustomers().length;
+  if (custPage * custPerPage < total) { custPage++; renderCustomersTable(); }
+}
+function getFilteredCustomers() {
+  const search = document.getElementById('cust-search').value.toLowerCase();
+  let rows = [...data.customers];
+  if (search) rows = rows.filter(r => r.name.toLowerCase().includes(search) || r.phone.includes(search) || (r.service||'').toLowerCase().includes(search) || (r.address||'').toLowerCase().includes(search));
+  rows.sort((a,b) => {
+    const av = (a[custSortKey]||'').toString().toLowerCase();
+    const bv = (b[custSortKey]||'').toString().toLowerCase();
+    return av < bv ? -custSortDir : av > bv ? custSortDir : 0;
+  });
+  return rows;
+}
+function renderCustomersTable() {
+  const rows = getFilteredCustomers();
+  const start = (custPage - 1) * custPerPage;
+  const pageRows = rows.slice(start, start + custPerPage);
+  const tbody = document.getElementById('cust-tbody');
+  tbody.innerHTML = '';
+  pageRows.forEach((r) => {
+    const cats = r.categories && r.categories.length ? r.categories : [r.payment||'General'];
+    const catBadges = cats.map(c => `<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#e0f2fe;color:#0369a1;margin-right:3px;">${c}</span>`).join('');
+    const initials = r.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const colors = ['#6d28d9','#0e7490','#be185d','#d97706','#16a34a'];
+    const avatarColor = colors[r.name.charCodeAt(0) % colors.length];
+    tbody.innerHTML += `<tr style="border-bottom:1px solid #f1f5f9;transition:background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+      <td style="padding:10px 14px;">
+        <div style="display:flex;gap:5px;">
+          <button title="View" onclick="viewCustomer('${r.id}')" style="background:#e0f2fe;color:#0369a1;border:none;border-radius:5px;width:30px;height:30px;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;justify-content:center;"><i class="fas fa-eye"></i></button>
+          <button title="Edit" onclick="editCustomer('${r.id}')" style="background:#f0fdf4;color:#16a34a;border:none;border-radius:5px;width:30px;height:30px;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;justify-content:center;"><i class="fas fa-edit"></i></button>
+          <button title="Delete" onclick="deleteCustomer('${r.id}')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;width:30px;height:30px;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;justify-content:center;"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+      <td class="col-name" style="padding:10px 14px;">
+        <div style="display:flex;align-items:center;gap:9px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:${avatarColor};color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">${initials}</div>
+          <div style="font-weight:700;color:#1e293b;font-size:13px;">${r.name}</div>
+        </div>
+      </td>
+      <td class="col-addl" style="padding:10px 14px;color:#475569;font-size:13px;">${r.service||'<span style="color:#cbd5e1;">—</span>'}</td>
+      <td class="col-cat" style="padding:10px 14px;">${catBadges}</td>
+      <td class="col-num" style="padding:10px 14px;color:#334155;font-size:13px;font-weight:600;">${r.phone}</td>
+      <td class="col-city" style="padding:10px 14px;color:#475569;font-size:13px;">${r.address||'<span style="color:#cbd5e1;">—</span>'}</td>
+      <td class="col-reg" style="padding:10px 14px;color:#94a3b8;font-size:12px;">${r.dateISO}</td>
+    </tr>`;
+  });
+  const showing = rows.length === 0 ? 0 : start + 1;
+  const showingEnd = Math.min(start + custPerPage, rows.length);
+  document.getElementById('cust-nodata').style.display = rows.length ? 'none' : 'block';
+  document.getElementById('cust-footer').textContent = `Showing ${showing} to ${showingEnd} of ${rows.length} entries`;
+}
+function deleteCustomer(id) {
+  if(confirm('Delete this customer?')) { data.customers = data.customers.filter(r=>r.id!==id); saveData(); renderCustomersTable(); updateDashboard(); }
+}
+function viewCustomer(id) {
+  const r = data.customers.find(c=>c.id===id);
+  if (!r) return;
+  const cats = r.categories && r.categories.length ? r.categories.join(', ') : (r.payment||'General');
+  alert(`👤 Customer Details\n\nName: ${r.name}\nPhone: ${r.phone}\nCity: ${r.address||'-'}\nAdditional Details: ${r.service||'-'}\nCategories: ${cats}\nDate: ${r.dateISO}`);
+}
+function editCustomer(id) {
+  const r = data.customers.find(c=>c.id===id);
+  if (!r) return;
+  // Remove old, open modal pre-filled
+  data.customers = data.customers.filter(c=>c.id!==id);
+  saveData(); renderCustomersTable();
+  renderCustCategoryCheckboxes();
+  document.getElementById('cust-name').value = r.name;
+  document.getElementById('cust-phone').value = r.phone;
+  document.getElementById('cust-address').value = r.address||'';
+  document.getElementById('cust-service').value = r.service||'';
+  // Re-check previous categories
+  setTimeout(() => {
+    const prevCats = r.categories || [r.payment];
+    document.querySelectorAll('#cust-cat-checkboxes input[type=checkbox]').forEach(cb => {
+      if (prevCats.includes(cb.value)) cb.checked = true;
+    });
+  }, 50);
+  document.getElementById('add-cust-modal').style.display = 'flex';
+}
+function toggleColVisibility() {
+  const m = document.getElementById('col-visibility-menu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+function toggleCol(cls, show) {
+  document.querySelectorAll('.'+cls).forEach(el => el.style.display = show ? '' : 'none');
+}
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('col-visibility-menu');
+  if (menu && !menu.contains(e.target) && !e.target.closest('button[onclick="toggleColVisibility()"]')) {
+    menu.style.display = 'none';
+  }
+});
+
+// ========== SERVICES ==========
+let svcPage = 1; const svcPerPage = 10;
+let svcSortKey = 'id'; let svcSortDir = 1;
+
+function openAddServiceModal() {
+  document.getElementById('svc-name').value = '';
+  document.getElementById('svc-govfee').value = '';
+  document.getElementById('svc-svcfee').value = '';
+  document.getElementById('svc-stdcharge').value = '';
+  document.getElementById('svc-expday').value = '1';
+  document.getElementById('add-svc-modal').style.display = 'flex';
+}
+function closeAddServiceModal() {
+  document.getElementById('add-svc-modal').style.display = 'none';
+}
+function calcStdCharges() {
+  const gov = parseFloat(document.getElementById('svc-govfee').value) || 0;
+  const svc = parseFloat(document.getElementById('svc-svcfee').value) || 0;
+  document.getElementById('svc-stdcharge').value = (gov + svc) > 0 ? '₹' + (gov + svc).toFixed(2) : '';
+}
+function addService() {
+  const name = document.getElementById('svc-name').value.trim();
+  const govFee = parseFloat(document.getElementById('svc-govfee').value) || 0;
+  const svcFee = parseFloat(document.getElementById('svc-svcfee').value) || 0;
+  const stdCharge = govFee + svcFee;
+  const expectedDay = parseInt(document.getElementById('svc-expday').value) || 1;
+  if (!name) { alert('Service Name is required!'); return; }
+  const svcId = 'SVC' + Date.now().toString().slice(-5);
+  data.services.push({ id: svcId, name, govFee, svcFee, stdCharge, expectedDay });
+  saveData(); renderServicesTable(); updateDashboard();
+  closeAddServiceModal();
+}
+function sortSvc(key) {
+  if (svcSortKey === key) svcSortDir *= -1; else { svcSortKey = key; svcSortDir = 1; }
+  renderServicesTable();
+}
+function svcPagePrev() { if (svcPage > 1) { svcPage--; renderServicesTable(); } }
+function svcPageNext() {
+  const search = document.getElementById('svc-search').value.toLowerCase();
+  let rows = data.services.filter(r => !search || r.name.toLowerCase().includes(search));
+  if (svcPage * svcPerPage < rows.length) { svcPage++; renderServicesTable(); }
+}
+function renderServicesTable() {
+  const search = document.getElementById('svc-search').value.toLowerCase();
+  let rows = [...data.services];
+  if (search) rows = rows.filter(r => r.name.toLowerCase().includes(search));
+  rows.sort((a,b) => {
+    const av = (a[svcSortKey]||'').toString().toLowerCase();
+    const bv = (b[svcSortKey]||'').toString().toLowerCase();
+    return av < bv ? -svcSortDir : av > bv ? svcSortDir : 0;
+  });
+  const start = (svcPage - 1) * svcPerPage;
+  const pageRows = rows.slice(start, start + svcPerPage);
+  const tbody = document.getElementById('svc-tbody');
+  tbody.innerHTML = '';
+  pageRows.forEach((r,i) => {
+    tbody.innerHTML += `<tr style="border-bottom:1px solid #f1f5f9;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+      <td style="padding:10px 14px;">
+        <div style="display:flex;gap:5px;">
+          <button title="Edit" onclick="editService('${r.id}')" style="background:#f0fdf4;color:#16a34a;border:none;border-radius:5px;width:30px;height:30px;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;justify-content:center;"><i class="fas fa-edit"></i></button>
+          <button title="Delete" onclick="deleteService('${r.id}')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:5px;width:30px;height:30px;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;justify-content:center;"><i class="fas fa-trash"></i></button>
+        </div>
+      </td>
+      <td class="svc-col-id" style="padding:10px 14px;color:#94a3b8;font-size:12px;">${r.id}</td>
+      <td class="svc-col-name" style="padding:10px 14px;font-weight:700;color:#1e293b;">${r.name}</td>
+      <td class="svc-col-govfee" style="padding:10px 14px;color:#475569;">₹${(r.govFee||0).toFixed(2)}</td>
+      <td class="svc-col-svcfee" style="padding:10px 14px;color:#475569;">₹${(r.svcFee||0).toFixed(2)}</td>
+      <td class="svc-col-std" style="padding:10px 14px;font-weight:700;color:#0e7490;">₹${(r.stdCharge||r.price||0).toFixed(2)}</td>
+      <td class="svc-col-exp" style="padding:10px 14px;color:#475569;">${r.expectedDay||1} day${(r.expectedDay||1)>1?'s':''}</td>
+    </tr>`;
+  });
+  const showEnd = Math.min(start + svcPerPage, rows.length);
+  document.getElementById('svc-nodata').style.display = rows.length ? 'none' : 'block';
+  document.getElementById('svc-footer').textContent = `Showing ${rows.length?start+1:0} to ${showEnd} of ${rows.length} entries`;
+}
+function editService(id) {
+  const r = data.services.find(s=>s.id===id);
+  if (!r) return;
+  data.services = data.services.filter(s=>s.id!==id);
+  saveData(); renderServicesTable();
+  document.getElementById('svc-name').value = r.name;
+  document.getElementById('svc-govfee').value = r.govFee||0;
+  document.getElementById('svc-svcfee').value = r.svcFee||0;
+  document.getElementById('svc-expday').value = r.expectedDay||1;
+  calcStdCharges();
+  document.getElementById('add-svc-modal').style.display = 'flex';
+}
+function deleteService(id) {
+  if(confirm('Delete this service?')) { data.services = data.services.filter(r=>r.id!==id); saveData(); renderServicesTable(); updateDashboard(); }
+}
+function toggleSvcColVisibility() {
+  const m = document.getElementById('svc-col-menu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+function toggleSvcCol(cls, show) {
+  document.querySelectorAll('.'+cls).forEach(el => el.style.display = show ? '' : 'none');
+}
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('svc-col-menu');
+  const btn = document.getElementById('svc-col-toggle-btn');
+  if (menu && !menu.contains(e.target) && btn && !btn.contains(e.target)) {
+    menu.style.display = 'none';
+  }
+});
+
+// ========== CUSTOMER NAME AUTOCOMPLETE ==========
+// Works on any input with data-autocomplete="customer"
+function setupCustomerAutocomplete(inputId, dropdownId) {
+  const input = document.getElementById(inputId);
+  const dropdown = document.getElementById(dropdownId);
+  if (!input || !dropdown) return;
+  input.addEventListener('input', function() {
+    const val = this.value.trim().toLowerCase();
+    dropdown.innerHTML = '';
+    if (val.length < 2) { dropdown.style.display = 'none'; return; }
+    const matches = data.customers.filter(c => c.name.toLowerCase().includes(val)).slice(0, 6);
+    if (!matches.length) { dropdown.style.display = 'none'; return; }
+    matches.forEach(c => {
+      const item = document.createElement('div');
+      item.style.cssText = 'padding:9px 14px;cursor:pointer;font-size:13px;color:#334155;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:10px;';
+      const initials = c.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      const colors = ['#6d28d9','#0e7490','#be185d','#d97706','#16a34a'];
+      const col = colors[c.name.charCodeAt(0) % colors.length];
+      item.innerHTML = `<span style="width:28px;height:28px;border-radius:50%;background:${col};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${initials}</span>
+        <span><strong>${c.name}</strong> <span style="color:#94a3b8;font-size:12px;">${c.phone}</span></span>`;
+      item.onmouseover = () => item.style.background = '#f0f9ff';
+      item.onmouseout = () => item.style.background = '';
+      item.onclick = () => {
+        input.value = c.name;
+        // If there's a paired phone input, fill it too
+        const phoneInput = document.getElementById(inputId.replace('name','number').replace('name','phone'));
+        if (phoneInput) phoneInput.value = c.phone;
+        dropdown.style.display = 'none';
+      };
+      dropdown.appendChild(item);
+    });
+    dropdown.style.display = 'block';
+  });
+  document.addEventListener('click', function(e) {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) dropdown.style.display = 'none';
+  });
+}
+// Apply autocomplete to Reminders and Leads name fields (existing fields in the app)
+window.addEventListener('load', function() {
+  // Inject autocomplete dropdowns wherever needed
+  ['rem-new-name','in-name','out-name'].forEach(id => {
+    const inp = document.getElementById(id);
+    if (!inp) return;
+    const dropId = id + '-ac-drop';
+    const wrap = inp.parentElement;
+    if (!wrap) return;
+    wrap.style.position = 'relative';
+    const drop = document.createElement('div');
+    drop.id = dropId;
+    drop.style.cssText = 'display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:0 0 8px 8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:9998;max-height:200px;overflow-y:auto;';
+    wrap.appendChild(drop);
+    setupCustomerAutocomplete(id, dropId);
+  });
+});
+
+// ========== REPORTS ==========
+function generateReport() {
+  const from = document.getElementById('rep-from').value;
+  const to = document.getElementById('rep-to').value;
+  let entries = data.ioEntries;
+  if (from) entries = entries.filter(e => e.dateISO >= from);
+  if (to) entries = entries.filter(e => e.dateISO <= to);
+  const totalIn = entries.filter(e=>e.type==='IN').reduce((s,e)=>s+e.amount,0);
+  const totalOut = entries.filter(e=>e.type==='OUT').reduce((s,e)=>s+e.amount,0);
+  document.getElementById('rep-in').textContent = totalIn.toFixed(2);
+  document.getElementById('rep-out').textContent = totalOut.toFixed(2);
+  const net = totalIn - totalOut;
+  const netEl = document.getElementById('rep-net-card');
+  netEl.textContent = '₹' + net.toFixed(2);
+  netEl.style.color = net >= 0 ? '#22c55e' : '#ef4444';
+  document.getElementById('rep-cust').textContent = data.customers.length;
+  const tbody = document.getElementById('rep-tbody');
+  tbody.innerHTML = '';
+  entries.forEach(e => {
+    tbody.innerHTML += `<tr>
+      <td>${e.dateISO}</td>
+      <td><span class="badge ${e.type.toLowerCase()}">${e.type}</span></td>
+      <td>${e.name||'-'}</td><td>${e.desc||'-'}</td>
+      <td style="font-weight:700;color:${e.type==='IN'?'#22c55e':'#ef4444'}">₹${e.amount.toFixed(2)}</td>
+    </tr>`;
+  });
+  document.getElementById('rep-nodata').style.display = entries.length ? 'none' : 'block';
+}
+
+// ========== CSV EXPORT ==========
+function exportCSV(type) {
+  let rows = [], headers = [], filename = 'export.csv';
+  if (type==='io') {
+    headers = ['Time','Type','Name','Number','Description','Amount'];
+    rows = data.ioEntries.map(e=>[e.time,e.type,e.name,e.number,e.desc,e.amount]);
+    filename = 'daily_inout.csv';
+  } else if (type==='rem') {
+    headers = ['Receipt No','Expected Date','Days Remaining','Name','Number','Service','Follow-up','Query'];
+    rows = data.reminders.map(r=>[r.id,r.expectedDate,daysBetween(r.expectedDate),r.name,r.num,r.svc,r.followupDate,r.query]);
+    filename = 'reminders.csv';
+  } else if (type==='leads') {
+    headers = ['Receipt No','Date','Name','Phone','Services','Total Charge','Received','Pending','Pay Type','Notes','Status'];
+    rows = data.leads.map(r=>[
+      r.receiptNo||r.id,
+      r.entryDate||r.dateISO,
+      r.name,r.phone,
+      (r.services||[]).map(s=>s.serviceName).join('; ') || (r.service||''),
+      r.totalCharge||0,r.received||0,r.pending||0,r.payType||'Cash',r.notes||'',r.status||'Pending'
+    ]);
+    filename = 'leads.csv';
+  } else if (type==='cust') {
+    headers = ['Date','Name','Phone','City','Additional Details','Categories'];
+    rows = data.customers.map(r=>[r.dateISO,r.name,r.phone,r.address,r.service,(r.categories||[r.payment||'']).join('; ')]);
+    filename = 'customers.csv';
+  } else if (type==='svc') {
+    headers = ['ID','Name','Government Fees','Service Fee','Standard Charges','Expected Day'];
+    rows = data.services.map(r=>[r.id,r.name,r.govFee||0,r.svcFee||0,r.stdCharge||r.price||0,r.expectedDay||1]);
+    filename = 'services.csv';
+  }
+  const csv = [headers, ...rows].map(r => r.map(c=>`"${c||''}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = filename; a.click();
+}
+
+// ========== LOGIN ==========
+const APP_PASSWORD = "shubham1234";
+function checkLogin() {
+  const pass = document.getElementById('login-pass').value;
+  if (pass === APP_PASSWORD) {
+    document.getElementById('login-screen').style.display = 'none';
+    sessionStorage.setItem('loggedIn', 'yes');
+  } else {
+    const err = document.getElementById('login-error');
+    err.style.display = 'block';
+    document.getElementById('login-pass').value = '';
+    setTimeout(() => { err.style.display = 'none'; }, 3000);
+  }
+}
+function togglePass() {
+  const input = document.getElementById('login-pass');
+  const icon = document.getElementById('eye-icon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'fas fa-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'fas fa-eye';
+  }
+}
+// Auto login if already logged in this session
+if (sessionStorage.getItem('loggedIn') === 'yes') {
+  document.getElementById('login-screen').style.display = 'none';
+}
+
+// ========== INIT ==========
+updateDashboard();
+updateIOBalances();
+</script>
+</body>
+</html>
